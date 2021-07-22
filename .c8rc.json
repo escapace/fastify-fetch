@@ -1,0 +1,9 @@
+{
+  "reporter": ["json", "text", "html"],
+  "exclude": ["node_modules/**", "**/*.spec.?(m)@(j|t)s?(x)", "vendor/**/*"],
+  "excludeAfterRemap": true,
+  "branches": 100,
+  "functions": 100,
+  "statements": 100,
+  "lines": 100
+}

@@ -1,0 +1,25 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  allow:
+    - dependency-name: "*"
+      dependency-type: "production"
+  schedule:
+    interval: weekly
+    day: saturday
+    time: '07:00'
+    timezone: GMT
+  open-pull-requests-limit: 10
+  versioning-strategy: increase
+  commit-message:
+    prefix: fix
+    prefix-development: chore
+    include: scope
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: weekly
+    day: saturday
+    time: '07:00'
+    timezone: GMT
