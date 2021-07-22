@@ -7,7 +7,7 @@ import type {
   RawServerDefault
 } from 'fastify'
 import { fastifyFetch } from './fastify-fetch'
-import type { RequestInfo, RequestInit, Response } from './types'
+import type { Fetch } from './types'
 
 declare module 'fastify/types/instance' {
   export interface FastifyInstance<
@@ -19,10 +19,11 @@ declare module 'fastify/types/instance' {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Logger = FastifyLoggerInstance
   > {
-    fetch: (url: RequestInfo, options_?: RequestInit) => Promise<Response>
+    fetch: Fetch
   }
 }
 
 export { fetch } from './fetch'
+export type { Fetch }
 export { fastifyFetch }
 export default fastifyFetch

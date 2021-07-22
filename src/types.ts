@@ -1,3 +1,4 @@
+import type { RequestInfo, RequestInit, Response } from 'node-fetch'
 export type { HTTPMethods } from 'fastify'
 export type { RequestOptions } from 'http'
 export type {
@@ -8,3 +9,8 @@ export type {
   Response,
   ResponseInit
 } from 'node-fetch'
+
+export type Fetch = (
+  url: RequestInfo,
+  options_?: RequestInit
+) => Promise<Response>
