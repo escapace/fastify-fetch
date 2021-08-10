@@ -5,7 +5,7 @@
   "author": "escapace <opensource@escapace.com>",
   "bugs": "https://github.com/escapace/fastify-fetch/issues",
   "dependencies": {
-    "@types/node-fetch": "^2.5.11",
+    "@types/node-fetch": "^2.5.12",
     "data-uri-to-buffer": "^3.0.1",
     "fastify-plugin": "^3.0.0"
   },
