@@ -45,6 +45,6 @@ jobs:
       - name: Build
         run: npm run build
       - name: Code Coverage
-        uses: codecov/codecov-action@v2.0.1
+        uses: codecov/codecov-action@v2.0.2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
