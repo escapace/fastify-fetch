@@ -1,4 +1,3 @@
-/* eslint-disable no-duplicate-imports */
 import type {
   FastifyLoggerInstance,
   RawReplyDefaultExpression,
@@ -7,7 +6,8 @@ import type {
   RawServerDefault
 } from 'fastify'
 import { fastifyFetch } from './fastify-fetch'
-import type { Fetch } from './types'
+
+type Fetch = typeof window.fetch
 
 declare module 'fastify/types/instance' {
   export interface FastifyInstance<
@@ -23,7 +23,5 @@ declare module 'fastify/types/instance' {
   }
 }
 
-export { fetch } from './fetch'
-export type { Fetch }
 export { fastifyFetch }
 export default fastifyFetch

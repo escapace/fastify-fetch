@@ -1,0 +1,35 @@
+{
+  extends: [
+    'config:base',
+    'schedule:weekly',
+    ':automergeLinters',
+    ':automergeMinor',
+    ':automergeTesters',
+    ':enableVulnerabilityAlerts',
+    ':rebaseStalePrs',
+    ':semanticCommits',
+    ':updateNotScheduled',
+    'group:allNonMajor'
+  ],
+  major: {
+    automerge: false
+  },
+  "packageRules": [
+    {
+      "matchDepTypes": ["devDependencies"],
+      "rangeStrategy": "pin"
+    },
+    {
+      "matchDepTypes": ["dependencies"],
+      "rangeStrategy": "bump"
+    }
+  ],
+  lockFileMaintenance: {
+    enabled: true
+  },
+  dependencyDashboard: false,
+  ignorePresets: [':prHourlyLimit2'],
+  labels: ['dependencies'],
+  node: false,
+  rebaseWhen: 'conflicted'
+}
