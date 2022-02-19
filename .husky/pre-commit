@@ -1,7 +1,13 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npx --no-install ls-lint
-npx --no-install lint-staged
-npm run typecheck
-npm run test
+pnpm exec syncpack set-semver-ranges --dev --source 'package.json' || exit 1
+pnpm exec syncpack format --source 'package.json' || exit 1
+
+pnpm install --lockfile-only
+git add package.json pnpm-lock.yaml
+
+pnpm exec ls-lint || exit 1
+pnpm exec lint-staged || exit 1
+pnpm run typecheck || exit 1
+pnpm run test || exit 1

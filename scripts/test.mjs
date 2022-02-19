@@ -6,7 +6,10 @@ import path from 'path'
 
 import { fileURLToPath } from 'url'
 
-const directoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../')
+const directoryRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '../'
+)
 const directoryTests = path.join(directoryRoot, 'lib/tests')
 const directorySrc = path.join(directoryRoot, 'src')
 
@@ -28,9 +31,17 @@ await build({
   sourcemap: true,
   bundle: true,
   platform: 'node',
-  target: 'node14.17.0',
+  target: 'node16.14.0',
   format: 'cjs',
-  external: ['chai', 'mocha', 'fastify', 'data-uri-to-buffer', 'fastify-plugin'],
+  external: [
+    'chai',
+    'mocha',
+    'fastify',
+    'fastify-plugin'
+  ],
+  outExtension: {
+    '.js': '.cjs'
+  },
   outbase: directorySrc,
   outdir: directoryTests,
   logLevel: 'info'
