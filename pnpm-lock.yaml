@@ -15,7 +15,7 @@ specifiers:
   chai: 4.3.6
   chai-as-promised: 7.1.1
   codecov: 3.8.2
-  data-uri-to-buffer: ^4.0.0
+  data-uri-to-buffer: 4.0.0
   esbuild: 0.14.23
   eslint: 8.9.0
   eslint-config-escapace: 3.12.4
@@ -43,7 +43,6 @@ specifiers:
   typescript: 4.5.5
 
 dependencies:
-  data-uri-to-buffer: 4.0.0
   fastify-plugin: 3.0.1
 
 devDependencies:
@@ -61,6 +60,7 @@ devDependencies:
   chai: 4.3.6
   chai-as-promised: 7.1.1_chai@4.3.6
   codecov: 3.8.2
+  data-uri-to-buffer: 4.0.0
   esbuild: 0.14.23
   eslint: 8.9.0
   eslint-config-escapace: 3.12.4_a7a15cfb8589bb84e9455222d2c732c6
@@ -1720,7 +1720,7 @@ packages:
   /data-uri-to-buffer/4.0.0:
     resolution: {integrity: sha512-Vr3mLBA8qWmcuschSLAOogKgQ/Jwxulv3RNE4FXnYWRGujzrRWQI4m12fQqRkwX06C0KanhLr4hK+GydchZsaA==}
     engines: {node: '>= 12'}
-    dev: false
+    dev: true
 
   /dateformat/3.0.3:
     resolution: {integrity: sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==}
