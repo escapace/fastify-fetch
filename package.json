@@ -5,7 +5,6 @@
   "author": "escapace <opensource@escapace.com>",
   "bugs": "https://github.com/escapace/fastify-fetch/issues",
   "dependencies": {
-    "data-uri-to-buffer": "^4.0.0",
     "fastify-plugin": "^3.0.1"
   },
   "devDependencies": {
@@ -23,6 +22,7 @@
     "chai": "4.3.6",
     "chai-as-promised": "7.1.1",
     "codecov": "3.8.2",
+    "data-uri-to-buffer": "4.0.0",
     "esbuild": "0.14.23",
     "eslint": "8.9.0",
     "eslint-config-escapace": "3.12.4",
@@ -66,7 +66,7 @@
   "scripts": {
     "build": "rm -rf lib && mkdir -p lib/example lib/node lib/types/temporary && npm run build:node && npm run build:example && npm run build:types",
     "build:example": "esbuild src/example.ts --bundle --sourcemap --format=cjs --platform=node --target=node16.14.0 --outfile=./lib/example/index.cjs",
-    "build:node": "esbuild src/index.ts --bundle --sourcemap --format=cjs --external:data-uri-to-buffer --external:fastify-plugin --platform=node --target=node16.14.0 --outfile=./lib/node/index.cjs",
+    "build:node": "esbuild src/index.ts --bundle --sourcemap --format=cjs --external:fastify-plugin --platform=node --target=node16.14.0 --outfile=./lib/node/index.cjs",
     "build:types": "tsc --emitDeclarationOnly --declarationDir lib/types/temporary && mv ./lib/types/temporary/src/* ./lib/types && rm -rf ./lib/types/temporary && find ./lib/types \\( -name '*spec.d.ts' -o -name '*spec.d.ts.map' -o -name 'example.d.ts' -o -name 'example.d.ts.map' \\) -type f -delete",
     "lint": "ls-lint && eslint 'src/**/*.ts?(x)'",
     "preinstall": "npx only-allow pnpm",
