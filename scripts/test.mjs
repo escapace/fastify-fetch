@@ -37,7 +37,8 @@ await build({
     'chai',
     'mocha',
     'fastify',
-    'fastify-plugin'
+    'fastify-plugin',
+    'undici'
   ],
   outExtension: {
     '.js': '.cjs'

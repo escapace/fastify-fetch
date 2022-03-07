@@ -5,7 +5,8 @@
   "author": "escapace <opensource@escapace.com>",
   "bugs": "https://github.com/escapace/fastify-fetch/issues",
   "dependencies": {
-    "fastify-plugin": "^3.0.1"
+    "fastify-plugin": "^3.0.1",
+    "undici": "^4.15.0"
   },
   "devDependencies": {
     "@commitlint/cli": "16.2.1",
@@ -15,18 +16,18 @@
     "@types/chai-as-promised": "7.1.5",
     "@types/fs-extra": "9.0.13",
     "@types/mocha": "9.1.0",
-    "@types/node": "17.0.18",
-    "@typescript-eslint/eslint-plugin": "5.12.1",
-    "@typescript-eslint/parser": "5.12.1",
+    "@types/node": "17.0.21",
+    "@typescript-eslint/eslint-plugin": "5.13.0",
+    "@typescript-eslint/parser": "5.13.0",
     "c8": "7.11.0",
     "chai": "4.3.6",
     "chai-as-promised": "7.1.1",
     "codecov": "3.8.2",
     "data-uri-to-buffer": "4.0.0",
-    "esbuild": "0.14.23",
+    "esbuild": "0.14.25",
     "eslint": "8.10.0",
     "eslint-config-escapace": "3.12.5",
-    "eslint-config-prettier": "8.4.0",
+    "eslint-config-prettier": "8.5.0",
     "eslint-plugin-editorconfig": "3.2.0",
     "eslint-plugin-no-null": "1.0.2",
     "fast-glob": "3.2.11",
@@ -38,18 +39,22 @@
     "fs-extra": "10.0.1",
     "husky": "7.0.4",
     "is-ci": "3.0.1",
-    "lint-staged": "12.3.4",
+    "lint-staged": "12.3.5",
     "mocha": "9.2.1",
-    "nyc": "15.1.0",
     "prettier": "2.5.1",
     "prettier-config-escapace": "1.0.4",
     "semantic-release": "19.0.2",
     "syncpack": "6.2.0",
-    "ts-node": "10.5.0",
-    "typescript": "4.5.5"
+    "ts-node": "10.7.0",
+    "typescript": "4.6.2"
   },
   "engines": {
     "node": ">=16.14.0"
+  },
+  "exports": {
+    ".": {
+      "require": "./lib/node/index.cjs"
+    }
   },
   "files": [
     "lib/types",
@@ -64,10 +69,10 @@
   },
   "repository": "https://github.com/escapace/fastify-fetch.git",
   "scripts": {
-    "build": "rm -rf lib && mkdir -p lib/example lib/node lib/types/temporary && npm run build:node && npm run build:example && npm run build:types",
-    "build:example": "esbuild src/example.ts --bundle --sourcemap --format=cjs --platform=node --target=node16.14.0 --outfile=./lib/example/index.cjs",
-    "build:node": "esbuild src/index.ts --bundle --sourcemap --format=cjs --external:fastify-plugin --platform=node --target=node16.14.0 --outfile=./lib/node/index.cjs",
-    "build:types": "tsc --emitDeclarationOnly --declarationDir lib/types/temporary && mv ./lib/types/temporary/src/* ./lib/types && rm -rf ./lib/types/temporary && find ./lib/types \\( -name '*spec.d.ts' -o -name '*spec.d.ts.map' -o -name 'example.d.ts' -o -name 'example.d.ts.map' \\) -type f -delete",
+    "build": "rm -rf lib && mkdir -p lib/example lib/node lib/types && npm run build:node && npm run build:example && npm run build:types",
+    "build:example": "esbuild src/example.ts --bundle --sourcemap --format=cjs --platform=node --external:fastify --external:fastify-plugin --external:undici --target=node16.14.0 --outfile=./lib/example/index.cjs",
+    "build:node": "esbuild src/index.ts --bundle --sourcemap --format=cjs --external:fastify-plugin --external:undici --platform=node --target=node16.14.0 --outfile=./lib/node/index.cjs",
+    "build:types": "tsc --emitDeclarationOnly --declarationDir lib/types && find ./lib/types \\( -name '*spec.d.ts' -o -name '*spec.d.ts.map' -o -name 'example.d.ts' -o -name 'example.d.ts.map' \\) -type f -delete",
     "lint": "ls-lint && eslint 'src/**/*.ts?(x)'",
     "preinstall": "npx only-allow pnpm",
     "prepare": "is-ci || husky install",
