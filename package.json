@@ -74,7 +74,6 @@
     "build:node": "esbuild src/index.ts --bundle --sourcemap --format=cjs --external:fastify-plugin --external:undici --platform=node --target=node16.14.0 --outfile=./lib/node/index.cjs",
     "build:types": "tsc --emitDeclarationOnly --declarationDir lib/types && find ./lib/types \\( -name '*spec.d.ts' -o -name '*spec.d.ts.map' -o -name 'example.d.ts' -o -name 'example.d.ts.map' \\) -type f -delete",
     "lint": "ls-lint && eslint 'src/**/*.ts?(x)'",
-    "preinstall": "npx only-allow pnpm",
     "prepare": "is-ci || husky install",
     "test": "node ./scripts/test.mjs && c8 mocha --enable-source-maps 'lib/tests/**/*.spec.cjs'",
     "typecheck": "tsc --noEmit"
