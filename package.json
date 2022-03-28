@@ -49,7 +49,7 @@
     "typescript": "4.6.3"
   },
   "engines": {
-    "node": ">=16.14.0"
+    "node": ">=14.19.1"
   },
   "exports": {
     ".": {
@@ -70,8 +70,8 @@
   "repository": "https://github.com/escapace/fastify-fetch.git",
   "scripts": {
     "build": "rm -rf lib && mkdir -p lib/example lib/node lib/types && npm run build:node && npm run build:example && npm run build:types",
-    "build:example": "esbuild src/example.ts --bundle --sourcemap --format=cjs --platform=node --external:fastify --external:fastify-plugin --external:undici --target=node16.14.0 --outfile=./lib/example/index.cjs",
-    "build:node": "esbuild src/index.ts --bundle --sourcemap --format=cjs --external:fastify-plugin --external:undici --platform=node --target=node16.14.0 --outfile=./lib/node/index.cjs",
+    "build:example": "esbuild src/example.ts --bundle --sourcemap --format=cjs --platform=node --external:fastify --external:fastify-plugin --external:undici --target=node14 --outfile=./lib/example/index.cjs",
+    "build:node": "esbuild src/index.ts --bundle --sourcemap --format=cjs --external:fastify-plugin --external:undici --platform=node --target=node14 --outfile=./lib/node/index.cjs",
     "build:types": "tsc --emitDeclarationOnly --declarationDir lib/types && find ./lib/types \\( -name '*spec.d.ts' -o -name '*spec.d.ts.map' -o -name 'example.d.ts' -o -name 'example.d.ts.map' \\) -type f -delete",
     "lint": "ls-lint && eslint 'src/**/*.ts?(x)'",
     "prepare": "is-ci || husky install",
