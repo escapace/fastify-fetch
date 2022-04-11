@@ -3,18 +3,13 @@
   extends: [
     'config:base',
     'schedule:weekly',
-    ':automergeLinters',
-    ':automergeMinor',
-    ':automergeTesters',
     ':enableVulnerabilityAlerts',
     ':rebaseStalePrs',
     ':semanticCommits',
     ':updateNotScheduled',
     'group:allNonMajor'
   ],
-  major: {
-    automerge: false
-  },
+  automerge: false,
   "packageRules": [
     {
       "matchDepTypes": ["devDependencies"],
