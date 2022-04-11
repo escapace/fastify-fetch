@@ -31,8 +31,8 @@ await build({
   sourcemap: true,
   bundle: true,
   platform: 'node',
-  target: 'node16.14.0',
-  format: 'cjs',
+  target: 'node16',
+  format: 'esm',
   external: [
     'chai',
     'mocha',
@@ -41,7 +41,7 @@ await build({
     'undici'
   ],
   outExtension: {
-    '.js': '.cjs'
+    '.js': '.mjs'
   },
   outbase: directorySrc,
   outdir: directoryTests,

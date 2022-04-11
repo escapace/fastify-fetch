@@ -49,33 +49,37 @@
     "typescript": "4.6.3"
   },
   "engines": {
-    "node": ">=14.19.1"
+    "node": ">=16.14.2"
   },
   "exports": {
     ".": {
-      "require": "./lib/node/index.cjs"
+      "require": "./lib/cjs/index.cjs",
+      "import": "./lib/esm/index.mjs"
     }
   },
   "files": [
     "lib/types",
-    "lib/node"
+    "lib/cjs",
+    "lib/esm"
   ],
   "homepage": "https://github.com/escapace/fastify-fetch",
   "license": "MPL-2.0",
-  "main": "./lib/node/index.cjs",
+  "main": "lib/cjs/index.cjs",
+  "module": "lib/esm/index.mjs",
   "private": false,
   "publishConfig": {
     "access": "public"
   },
   "repository": "https://github.com/escapace/fastify-fetch.git",
   "scripts": {
-    "build": "rm -rf lib && mkdir -p lib/example lib/node lib/types && npm run build:node && npm run build:example && npm run build:types",
-    "build:example": "esbuild src/example.ts --bundle --sourcemap --format=cjs --platform=node --external:fastify --external:fastify-plugin --external:undici --target=node14 --outfile=./lib/example/index.cjs",
-    "build:node": "esbuild src/index.ts --bundle --sourcemap --format=cjs --external:fastify-plugin --external:undici --platform=node --target=node14 --outfile=./lib/node/index.cjs",
+    "build": "rm -rf lib && mkdir -p lib/example lib/node lib/types && npm run build:cjs && npm run build:esm && npm run build:example && npm run build:types",
+    "build:cjs": "esbuild src/index.ts --bundle --sourcemap --format=cjs --external:fastify-plugin --external:undici --platform=node --target=node16 --outfile=./lib/cjs/index.cjs",
+    "build:esm": "esbuild src/index.ts --bundle --sourcemap --format=esm --external:fastify-plugin --external:undici --platform=node --target=node16 --outfile=./lib/esm/index.mjs",
+    "build:example": "esbuild src/example.ts --bundle --sourcemap --format=esm --platform=node --external:fastify --external:fastify-plugin --external:undici --target=node16 --outfile=./lib/example/index.mjs",
     "build:types": "tsc --emitDeclarationOnly --declarationDir lib/types && find ./lib/types \\( -name '*spec.d.ts' -o -name '*spec.d.ts.map' -o -name 'example.d.ts' -o -name 'example.d.ts.map' \\) -type f -delete",
     "lint": "ls-lint && eslint 'src/**/*.ts?(x)'",
     "prepare": "is-ci || husky install",
-    "test": "node ./scripts/test.mjs && c8 mocha --enable-source-maps 'lib/tests/**/*.spec.cjs'",
+    "test": "node ./scripts/test.mjs && c8 mocha --enable-source-maps 'lib/tests/**/*.spec.mjs'",
     "typecheck": "tsc --noEmit"
   },
   "sideEffects": false,
