@@ -6,8 +6,9 @@ import type {
   RawServerDefault
 } from 'fastify'
 import { fastifyFetch } from './fastify-fetch'
+import { fetch } from 'undici'
 
-type Fetch = typeof window.fetch
+export type Fetch = typeof fetch
 
 declare module 'fastify/types/instance' {
   export interface FastifyInstance<
