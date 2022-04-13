@@ -1,5 +1,5 @@
 {
-  "enabledManagers": ["npm"],
+  enabledManagers: ['npm'],
   extends: [
     'config:base',
     'schedule:weekly',
@@ -10,16 +10,22 @@
     'group:allNonMajor'
   ],
   automerge: false,
-  "packageRules": [
+  packageRules: [
     {
-      "matchDepTypes": ["devDependencies"],
-      "rangeStrategy": "pin",
-      "semanticCommitType": "chore"
+      matchDepTypes: ['devDependencies'],
+      rangeStrategy: 'pin',
+      semanticCommitType: 'chore'
     },
     {
-      "matchDepTypes": ["dependencies"],
-      "rangeStrategy": "bump",
-      "semanticCommitType": "fix"
+      matchDepTypes: ['peerDependencies'],
+      enabled: true,
+      rangeStrategy: 'widen',
+      semanticCommitType: 'chore'
+    },
+    {
+      matchDepTypes: ['dependencies'],
+      rangeStrategy: 'bump',
+      semanticCommitType: 'fix'
     }
   ],
   lockFileMaintenance: {
