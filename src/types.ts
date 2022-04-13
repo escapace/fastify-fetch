@@ -1,15 +1,6 @@
-// import type { RequestInfo, RequestInit, Response } from 'node-fetch'
-// export type { HTTPMethods } from 'fastify'
-// export type { RequestOptions } from 'http'
-// export type {
-//   Request as NodeFetchRequest,
-//   RequestInfo,
-//   RequestInit,
-//   Response,
-//   ResponseInit
-// } from 'node-fetch'
+import { fetch, RequestInfo, RequestInit } from 'undici'
 
-// export type Fetch = (
-//   url: RequestInfo,
-//   options_?: RequestInit
-// ) => Promise<Response>
+export interface Options {
+  match?: (requestInfo: RequestInfo, requestInit?: RequestInit) => boolean
+  fetch?: typeof fetch
+}

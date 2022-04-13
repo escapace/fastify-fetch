@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import fastify from 'fastify'
@@ -15,7 +14,7 @@ describe('./src/index.spec.ts', () => {
     this.timeout(4000)
 
     const app = fastify()
-    await app.register(fastifyFetch)
+    await app.register(fastifyFetch, { match: () => true })
 
     app.get('/hello', (_req, res) => {
       res.raw.writeHead(200, { 'Content-Type': 'text/plain' })
@@ -149,7 +148,6 @@ describe('./src/index.spec.ts', () => {
     })
 
     const response = await app.fetch(
-      // @ts-expect-error URL is supported
       new URL('https://example.com:8080/hello?test=1234'),
       {
         method: 'GET'
