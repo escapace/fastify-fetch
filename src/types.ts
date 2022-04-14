@@ -1,6 +1,6 @@
-import { fetch, RequestInfo, RequestInit } from 'undici'
+import { fetch, Request } from 'undici'
 
 export interface Options {
-  match?: (requestInfo: RequestInfo, requestInit?: RequestInit) => boolean
+  match?: (url: URL, request: Request) => boolean
   fetch?: typeof fetch
 }
