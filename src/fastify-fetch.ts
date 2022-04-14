@@ -33,15 +33,15 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
       requestInfo: RequestInfo,
       requestInit?: RequestInit
     ): Promise<Response> => {
+      const request = new Request(requestInfo, requestInit)
+
+      const parsedURL = new URL(request.url)
+
       if (
         !hasMatchFunction ||
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        (hasMatchFunction && options.match!(requestInfo, requestInit))
+        (hasMatchFunction && options.match!(parsedURL, request))
       ) {
-        const request = new Request(requestInfo, requestInit)
-
-        const parsedURL = new URL(request.url)
-
         if (!supportedSchemas.has(parsedURL.protocol)) {
           throw new TypeError(
             `URL scheme "${parsedURL.protocol.replace(
@@ -120,7 +120,7 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
           status
         })
       } else {
-        return await (options.fetch ?? fetch)(requestInfo, requestInit)
+        return await (options.fetch ?? fetch)(request)
       }
     }
   )
