@@ -1,5 +1,4 @@
 import dataUriToBuffer from 'data-uri-to-buffer'
-import type { HTTPMethods } from 'fastify'
 import fp from 'fastify-plugin'
 import {
   fetch,
@@ -37,33 +36,50 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
 
       const parsedURL = new URL(request.url)
 
+      if (!supportedSchemas.has(parsedURL.protocol)) {
+        throw new TypeError(
+          `URL scheme "${parsedURL.protocol.replace(
+            /:$/,
+            ''
+          )}" is not supported.`
+        )
+      }
+
+      if (parsedURL.protocol === 'data:') {
+        const data = dataUriToBuffer(request.url)
+
+        return new Response(data, {
+          headers: { 'Content-Type': data.typeFull }
+        })
+      }
+
+      const method = request.method.toUpperCase()
+
+      if (
+        !['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT'].includes(
+          method
+        )
+      ) {
+        throw new TypeError(`${method} is not supported.`)
+      }
+
       if (
         !hasMatchFunction ||
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         (hasMatchFunction && options.match!(parsedURL, request))
       ) {
-        if (!supportedSchemas.has(parsedURL.protocol)) {
-          throw new TypeError(
-            `URL scheme "${parsedURL.protocol.replace(
-              /:$/,
-              ''
-            )}" is not supported.`
-          )
-        }
-
-        if (parsedURL.protocol === 'data:') {
-          const data = dataUriToBuffer(request.url)
-
-          return new Response(data, {
-            headers: { 'Content-Type': data.typeFull }
-          })
-        }
-
         const response = await app.inject({
           url: request.url,
           headers: Object.fromEntries(request.headers.entries()),
           payload: await request.arrayBuffer(),
-          method: request.method as HTTPMethods
+          method: method as
+            | 'DELETE'
+            | 'GET'
+            | 'HEAD'
+            | 'OPTIONS'
+            | 'PATCH'
+            | 'POST'
+            | 'PUT'
         })
 
         const headers = new Headers(
