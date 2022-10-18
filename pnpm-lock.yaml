@@ -7,7 +7,7 @@ specifiers:
   '@types/chai': 4.3.3
   '@types/chai-as-promised': 7.1.5
   '@types/fs-extra': 9.0.13
-  '@types/mocha': 9.1.1
+  '@types/mocha': 10.0.0
   '@types/node': 18.7.13
   '@typescript-eslint/eslint-plugin': 5.37.0
   '@typescript-eslint/parser': 5.37.0
@@ -53,7 +53,7 @@ devDependencies:
   '@types/chai': 4.3.3
   '@types/chai-as-promised': 7.1.5
   '@types/fs-extra': 9.0.13
-  '@types/mocha': 9.1.1
+  '@types/mocha': 10.0.0
   '@types/node': 18.7.13
   '@typescript-eslint/eslint-plugin': 5.37.0_22c5fnooleyfkzrkkgdmel5kmi
   '@typescript-eslint/parser': 5.37.0_irgkl5vooow2ydyo6aokmferha
@@ -688,8 +688,8 @@ packages:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
     dev: true
 
-  /@types/mocha/9.1.1:
-    resolution: {integrity: sha512-Z61JK7DKDtdKTWwLeElSEBcWGRLY8g95ic5FoQqI9CMx0ns/Ghep3B4DfcEimiKMvtamNVULVNKEsiwV3aQmXw==}
+  /@types/mocha/10.0.0:
+    resolution: {integrity: sha512-rADY+HtTOA52l9VZWtgQfn4p+UDVM2eDVkMZT1I6syp0YKxW2F9v+0pbRZLsvskhQv/vMb6ZfCay81GHbz5SHg==}
     dev: true
 
   /@types/node/14.18.31:
