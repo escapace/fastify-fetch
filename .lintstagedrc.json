@@ -1,9 +1,6 @@
 {
-  "package.json": [
-    "syncpack-format --source",
-    "syncpack-set-semver-ranges --dev --source"
-  ],
+  "*.json": ["prettier --write"],
   "*.md": ["prettier --write"],
-  "{src,examples,perf}/**/*.ts?(x)": ["eslint --fix", "prettier --write"],
-  "{src,examples,perf}/**/*.js?(x)": ["eslint --fix", "prettier --write"]
+  "*.{yml,yaml}": ["prettier --write"],
+  "src/**/*.{js,mjs,cjs,ts,mts,cts}": ["eslint --fix", "prettier --write"]
 }
