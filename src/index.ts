@@ -1,25 +1,10 @@
-import type {
-  FastifyLoggerInstance,
-  RawReplyDefaultExpression,
-  RawRequestDefaultExpression,
-  RawServerBase,
-  RawServerDefault
-} from 'fastify'
-import { fastifyFetch } from './fastify-fetch'
 import { fetch } from 'undici'
+import { fastifyFetch } from './fastify-fetch'
 
 export type Fetch = typeof fetch
 
 declare module 'fastify/types/instance' {
-  export interface FastifyInstance<
-    RawServer extends RawServerBase = RawServerDefault,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    Logger = FastifyLoggerInstance
-  > {
+  interface FastifyInstance {
     fetch: Fetch
   }
 }

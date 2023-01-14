@@ -43,6 +43,6 @@
   node: {
     enabled: false
   },
-  prCreation: 'not-pending',
+  prCreation: 'immediate',
   rebaseWhen: 'conflicted'
 }
