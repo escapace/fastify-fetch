@@ -83,6 +83,7 @@
     "build:types": "tsc --emitDeclarationOnly --declarationDir lib/types && find ./lib/types \\( -name '*spec.d.ts' -o -name '*spec.d.ts.map' -o -name 'example.d.ts' -o -name 'example.d.ts.map' \\) -type f -delete",
     "lint": "ls-lint && eslint 'src/**/*.ts?(x)'",
     "prepare": "is-ci || husky install",
+    "release": "node ./scripts/release.mjs",
     "test": "node ./scripts/test.mjs && c8 mocha --enable-source-maps 'lib/tests/**/*.spec.mjs'",
     "typecheck": "tsc --noEmit"
   },
