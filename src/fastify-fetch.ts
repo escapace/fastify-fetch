@@ -83,8 +83,17 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
         })
 
         const headers = new Headers(
-          response.headers as Record<string, string | readonly string[]>
+          Object.entries(response.headers)
+            .flatMap(([key, values]) =>
+              values === undefined
+                ? undefined
+                : Array.isArray(values)
+                ? values.map((value): [string, string] => [key, value])
+                : [[key, values] as [string, string]]
+            )
+            .filter((value): value is [string, string] => value !== undefined)
         )
+
         const statusText = response.statusMessage
         const status = response.statusCode
 
