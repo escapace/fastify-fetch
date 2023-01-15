@@ -16,6 +16,8 @@ import {
 } from 'zlib'
 import type { Options } from './types'
 
+type Decoder = (value: Buffer) => Promise<Buffer>
+
 const gunzip = promisify(_gunzip)
 const brotliDecompress = promisify(_brotliDecompress)
 const inflate = promisify(_inflate)
@@ -82,61 +84,69 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
             | 'PUT'
         })
 
-        const headers = new Headers(
-          Object.entries(response.headers)
-            .flatMap(([key, values]) =>
-              values === undefined
-                ? undefined
-                : Array.isArray(values)
-                ? values.map((value): [string, string] => [key, value])
-                : [[key, values] as [string, string]]
-            )
-            .filter((value): value is [string, string] => value !== undefined)
-        )
+        const headers = new Headers()
+
+        for (const [key, values] of Object.entries(response.headers)) {
+          if (values === undefined) {
+            continue
+          } else if (Array.isArray(values)) {
+            for (const value of values) {
+              headers.set(key, value)
+            }
+          } else {
+            headers.set(key, `${values}`)
+          }
+        }
 
         const statusText = response.statusMessage
         const status = response.statusCode
-
-        const codings =
-          headers
-            .get('content-encoding')
-            ?.toLowerCase()
-            .split(',')
-            .map((x) => x.trim()) ?? []
-
-        type InputType = Buffer
-        type Decoder = (value: InputType) => Promise<Buffer>
-        const decoders: Decoder[] = []
 
         let payload: Buffer | undefined = response.rawPayload
 
         if (payload.length === 0) {
           payload = undefined
         } else {
+          const codings = new Set(
+            headers
+              .get('content-encoding')
+              ?.toLowerCase()
+              .split(',')
+              .map((x) => x.trim()) ?? []
+          )
+
+          const decoders: Decoder[] = []
+
           for (const coding of codings) {
             if (/(x-)?gzip/.test(coding)) {
-              decoders.push(async (value: InputType) => await gunzip(value))
+              decoders.push(async (value: Buffer) => await gunzip(value))
+
+              codings.delete(coding)
             } else if (/(x-)?deflate/.test(coding)) {
-              decoders.push(async (value: InputType) => await inflate(value))
+              decoders.push(async (value: Buffer) => await inflate(value))
+
+              codings.delete(coding)
             } else if (coding === 'br') {
               decoders.push(
-                async (value: InputType) => await brotliDecompress(value)
+                async (value: Buffer) => await brotliDecompress(value)
               )
-            } else {
-              decoders.length = 0
-              break
+
+              codings.delete(coding)
             }
           }
 
-          if (decoders.length === 0) {
-            decoders.push(async (value) => await Promise.resolve(value))
-          }
+          decoders.push(async (value) => await Promise.resolve(value))
 
           payload = await decoders.reduce(
             (previousValue, currentValue): Decoder =>
-              async (value: InputType) =>
+              async (value: Buffer) =>
                 await currentValue(await previousValue(value))
           )(payload)
+
+          if (codings.size === 0) {
+            headers.delete('content-encoding')
+          } else {
+            headers.set('content-encoding', Array.from(codings).join(', '))
+          }
         }
 
         return new Response(payload, {

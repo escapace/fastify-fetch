@@ -265,7 +265,7 @@ describe('./src/index.spec.ts', () => {
     const response = await app.fetch('https://example.com/gzip')
     assert.ok(response.ok)
     assert.equal(response.headers.get('content-type'), 'text/plain')
-    assert.equal(response.headers.get('content-encoding'), 'gzip')
+    assert.equal(response.headers.get('content-encoding'), null)
     assert.equal(await response.text(), 'hello world')
   })
 
@@ -291,7 +291,7 @@ describe('./src/index.spec.ts', () => {
     const response = await app.fetch('https://example.com/deflate')
     assert.ok(response.ok)
     assert.equal(response.headers.get('content-type'), 'text/plain')
-    assert.equal(response.headers.get('content-encoding'), 'deflate')
+    assert.equal(response.headers.get('content-encoding'), null)
     assert.equal(await response.text(), 'hello world')
   })
 
@@ -343,7 +343,7 @@ describe('./src/index.spec.ts', () => {
     const response = await app.fetch('https://example.com/brotli')
     assert.ok(response.ok)
     assert.equal(response.headers.get('content-type'), 'text/plain')
-    assert.equal(response.headers.get('content-encoding'), 'br')
+    assert.equal(response.headers.get('content-encoding'), null)
     assert.equal(await response.text(), 'hello world')
   })
 
