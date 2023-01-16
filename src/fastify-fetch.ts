@@ -24,6 +24,57 @@ const inflate = promisify(_inflate)
 
 const supportedSchemas = new Set(['data:', 'http:', 'https:'])
 
+const decompressPayload = async (rawPayload: Buffer, headers: Headers) => {
+  if (rawPayload.length === 0) {
+    return undefined
+  }
+
+  const codings =
+    headers
+      .get('content-encoding')
+      ?.toLowerCase()
+      .split(',')
+      .map((x) => x.trim()) ?? []
+
+  if (codings.length === 0) {
+    return rawPayload
+  }
+
+  const decoders: Decoder[] = []
+
+  const remainingCodings = codings
+    .map((coding) => {
+      if (/(x-)?gzip/.test(coding)) {
+        decoders.push(async (value: Buffer) => await gunzip(value))
+      } else if (/(x-)?deflate/.test(coding)) {
+        decoders.push(async (value: Buffer) => await inflate(value))
+      } else if (coding === 'br') {
+        decoders.push(async (value: Buffer) => await brotliDecompress(value))
+      } else {
+        return coding
+      }
+
+      return undefined
+    })
+    .filter((value): value is string => value !== undefined)
+
+  decoders.push(async (value) => await Promise.resolve(value))
+
+  const payload = await decoders.reduce(
+    (previousValue, currentValue): Decoder =>
+      async (value: Buffer) =>
+        await currentValue(await previousValue(value))
+  )(rawPayload)
+
+  if (remainingCodings.length === 0) {
+    headers.delete('content-encoding')
+  } else {
+    headers.set('content-encoding', Array.from(remainingCodings).join(', '))
+  }
+
+  return payload
+}
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export const fastifyFetch = fp<Options>(async (app, options = {}) => {
   const hasMatchFunction = typeof options.match === 'function'
@@ -100,54 +151,7 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
 
         const statusText = response.statusMessage
         const status = response.statusCode
-
-        let payload: Buffer | undefined = response.rawPayload
-
-        if (payload.length === 0) {
-          payload = undefined
-        } else {
-          const codings = new Set(
-            headers
-              .get('content-encoding')
-              ?.toLowerCase()
-              .split(',')
-              .map((x) => x.trim()) ?? []
-          )
-
-          const decoders: Decoder[] = []
-
-          for (const coding of codings) {
-            if (/(x-)?gzip/.test(coding)) {
-              decoders.push(async (value: Buffer) => await gunzip(value))
-
-              codings.delete(coding)
-            } else if (/(x-)?deflate/.test(coding)) {
-              decoders.push(async (value: Buffer) => await inflate(value))
-
-              codings.delete(coding)
-            } else if (coding === 'br') {
-              decoders.push(
-                async (value: Buffer) => await brotliDecompress(value)
-              )
-
-              codings.delete(coding)
-            }
-          }
-
-          decoders.push(async (value) => await Promise.resolve(value))
-
-          payload = await decoders.reduce(
-            (previousValue, currentValue): Decoder =>
-              async (value: Buffer) =>
-                await currentValue(await previousValue(value))
-          )(payload)
-
-          if (codings.size === 0) {
-            headers.delete('content-encoding')
-          } else {
-            headers.set('content-encoding', Array.from(codings).join(', '))
-          }
-        }
+        const payload = await decompressPayload(response.rawPayload, headers)
 
         return new Response(payload, {
           headers,
