@@ -124,7 +124,7 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
         const response = await app.inject({
           url: request.url,
           headers: Object.fromEntries(request.headers.entries()),
-          payload: await request.arrayBuffer(),
+          payload: Buffer.from(await request.arrayBuffer()),
           method: method as
             | 'DELETE'
             | 'GET'
