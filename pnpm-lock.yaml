@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@commitlint/cli': 17.4.4
   '@commitlint/config-conventional': 17.4.4
+  '@fastify/multipart': 6.0.0
   '@ls-lint/ls-lint': 1.11.2
   '@types/chai': 4.3.4
   '@types/chai-as-promised': 7.1.5
@@ -27,7 +28,6 @@ specifiers:
   execa: 7.1.0
   fast-glob: 3.2.12
   fastify: 4.14.1
-  fastify-multipart: 5.4.0
   fastify-plugin: ^4.5.0
   fetch-blob: 3.2.0
   form-data: 4.0.0
@@ -53,6 +53,7 @@ dependencies:
 devDependencies:
   '@commitlint/cli': 17.4.4
   '@commitlint/config-conventional': 17.4.4
+  '@fastify/multipart': 6.0.0
   '@ls-lint/ls-lint': 1.11.2
   '@types/chai': 4.3.4
   '@types/chai-as-promised': 7.1.5
@@ -77,7 +78,6 @@ devDependencies:
   execa: 7.1.0
   fast-glob: 3.2.12
   fastify: 4.14.1
-  fastify-multipart: 5.4.0
   fetch-blob: 3.2.0
   form-data: 4.0.0
   formdata-polyfill: 4.0.10
@@ -561,6 +561,10 @@ packages:
     resolution: {integrity: sha512-J8TOSBq3SoZbDhM9+R/u77hP93gz/rajSA+K2kGyijPpORPWUXHUpTaleoj+92As0S9uPRP7Oi8IqMf0u+ro6A==}
     dev: true
 
+  /@fastify/error/2.0.0:
+    resolution: {integrity: sha512-wI3fpfDT0t7p8E6dA2eTECzzOd+bZsZCJ2Hcv+Onn2b7ZwK3RwD27uW2QDaMtQhAfWQQP+WNK7nKf0twLsBf9w==}
+    dev: true
+
   /@fastify/error/3.2.0:
     resolution: {integrity: sha512-KAfcLa+CnknwVi5fWogrLXgidLic+GXnLjijXdpl8pvkvbXU5BGa37iZO9FGvsh9ZL4y+oFi5cbHBm5UOG+dmQ==}
     dev: true
@@ -569,6 +573,19 @@ packages:
     resolution: {integrity: sha512-ypZynRvXA3dibfPykQN3RB5wBdEUgSGgny8Qc6k163wYPLD4mEGEDkACp+00YmqkGvIm8D/xYoHajwyEdWD/eg==}
     dependencies:
       fast-json-stringify: 5.6.2
+    dev: true
+
+  /@fastify/multipart/6.0.0:
+    resolution: {integrity: sha512-TwxPH9jE3bEaCdMD1Xqm2YS1aelgJxcNmA/uYAPCzqnVEylDiKCmxCstGulb1W5WdMoyqD5LBGm7AoqDwWTCWQ==}
+    dependencies:
+      '@fastify/busboy': 1.2.1
+      '@fastify/error': 2.0.0
+      deepmerge: 4.3.0
+      end-of-stream: 1.4.4
+      fastify-plugin: 3.0.1
+      hexoid: 1.0.0
+      secure-json-parse: 2.7.0
+      stream-wormhole: 1.1.0
     dev: true
 
   /@humanwhocodes/config-array/0.11.8:
@@ -2367,30 +2384,6 @@ packages:
     resolution: {integrity: sha512-cIusKBIt/R/oI6z/1nyfe2FvGKVTohVRfvkOhvx0nCEW+xf5NoCXjAHcWp93uOUBchzYcsvPlrapAdX1uW+YGg==}
     dev: true
 
-  /fastify-error/0.3.1:
-    resolution: {integrity: sha512-oCfpcsDndgnDVgiI7bwFKAun2dO+4h84vBlkWsWnz/OUK9Reff5UFoFl241xTiLeHWX/vU9zkDVXqYUxjOwHcQ==}
-    dev: true
-
-  /fastify-multipart/5.3.1:
-    resolution: {integrity: sha512-c2pnGfkJmiNpYqzFYT2QfBg/06AxG531O+n1elqc8YUbWPRzufdqn3yfGAIV3RA7J4Vnf7Pfvgx0iaWqaRTOVA==}
-    dependencies:
-      '@fastify/busboy': 1.2.1
-      deepmerge: 4.3.0
-      end-of-stream: 1.4.4
-      fastify-error: 0.3.1
-      fastify-plugin: 3.0.1
-      hexoid: 1.0.0
-      secure-json-parse: 2.7.0
-      stream-wormhole: 1.1.0
-    dev: true
-
-  /fastify-multipart/5.4.0:
-    resolution: {integrity: sha512-Pafy4mtcuFUnFM/t0kgCdL854KIEoDymNVdv4nD7uBfV7lBCQq/NVEuNnaNXAbuCTpeXzYRzi50lSDa9ZM838A==}
-    dependencies:
-      fastify-multipart-deprecated: /fastify-multipart/5.3.1
-      process-warning: 1.0.0
-    dev: true
-
   /fastify-plugin/3.0.1:
     resolution: {integrity: sha512-qKcDXmuZadJqdTm6vlCqioEbyewF60b/0LOFCcYN1B6BIZGlYJumWWOYs70SFYLDAH4YqdE1cxH/RKMG7rFxgA==}
     dev: true
@@ -4146,10 +4139,6 @@ packages:
 
   /process-nextick-args/2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
-    dev: true
-
-  /process-warning/1.0.0:
-    resolution: {integrity: sha512-du4wfLyj4yCZq1VupnVSZmRsPJsNuxoDQFdCFHLaYiEbFBD7QE0a+I4D7hOxrVnh78QE/YipFAj9lXHiXocV+Q==}
     dev: true
 
   /process-warning/2.1.0:
