@@ -55,7 +55,7 @@ jobs:
       - name: test
         run: pnpm run test
       - name: code coverage
-        uses: codecov/codecov-action@v3.1.1
+        uses: codecov/codecov-action@v3.1.2
       - name: build
         run: pnpm run build
       - name: write .npmrc
