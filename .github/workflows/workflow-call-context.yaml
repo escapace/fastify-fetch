@@ -44,7 +44,7 @@ jobs:
           ref: ${{ steps.ref.outputs.value }}
           fetch-depth: 0
       - id: action-context
-        uses: escapace/action-context@v0.3.2
+        uses: escapace/action-context@v0.4.0
       - id: node-version
         name: node-version
         shell: bash
