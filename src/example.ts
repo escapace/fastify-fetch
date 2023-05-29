@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import fastify from 'fastify'
 import fastifyFetch from './index'
 
