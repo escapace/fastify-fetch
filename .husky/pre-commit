@@ -1,8 +1,13 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-pnpm exec syncpack set-semver-ranges --dev --source 'package.json' || exit 1
-pnpm exec syncpack format --source 'package.json' || exit 1
+pnpm exec syncpack fix-mismatches \
+  --types dev,prod,peer,engines || exit 1
+
+pnpm exec syncpack set-semver-ranges \
+  --types dev,prod,peer,engines || exit 1
+
+pnpm exec syncpack format || exit 1
 
 pnpm install
 git add package.json pnpm-lock.yaml
