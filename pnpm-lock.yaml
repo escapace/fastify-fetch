@@ -1,4 +1,8 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 dependencies:
   fastify-plugin:
@@ -91,8 +95,8 @@ devDependencies:
     specifier: 4.17.0
     version: 4.17.0
   fetch-blob:
-    specifier: 3.2.0
-    version: 3.2.0
+    specifier: 4.0.0
+    version: 4.0.0
   form-data:
     specifier: 4.0.0
     version: 4.0.0
@@ -2416,6 +2420,13 @@ packages:
     dependencies:
       node-domexception: 1.0.0
       web-streams-polyfill: 3.2.1
+    dev: true
+
+  /fetch-blob@4.0.0:
+    resolution: {integrity: sha512-nPmnhRmpNMjYWnp9EBMGs6z5lq9RXed5W1vuZcECrsDVQInM8AMQSooVb3X183Aole60adzjWbH9qlRFWzDDTA==}
+    engines: {node: '>=16.7'}
+    dependencies:
+      node-domexception: 1.0.0
     dev: true
 
   /figures@2.0.0:
