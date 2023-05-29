@@ -1,0 +1,41 @@
+name: release
+
+on:
+  push:
+    branches:
+      - trunk
+    paths-ignore:
+      - README.md
+      - LICENSE
+  pull_request:
+    branches:
+      - trunk
+    paths-ignore:
+      - README.md
+      - LICENSE
+
+# Remove default permissions of GITHUB_TOKEN for security
+# https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+permissions: {}
+
+env:
+  # 7 GiB by default on GitHub, setting to 6 GiB
+  # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
+  NODE_OPTIONS: --max-old-space-size=6144
+
+jobs:
+  context:
+    uses: ./.github/workflows/workflow-call-context.yaml
+    permissions:
+      contents: read
+  ci:
+    uses: ./.github/workflows/workflow-call-ci.yaml
+    needs:
+      - context
+    permissions:
+      contents: read
+    with:
+      ref: ${{ needs.context.outputs.ref }}
+      node-version: ${{ needs.context.outputs.node-version }}
+      pnpm-version: ${{ needs.context.outputs.pnpm-version }}
+      upload: false

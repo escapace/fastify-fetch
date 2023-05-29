@@ -1,0 +1,64 @@
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+      node-version:
+        required: true
+        type: string
+      pnpm-version:
+        required: true
+        type: string
+      upload:
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.ref }}
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: install pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: ${{ inputs.pnpm-version }}
+          run_install: false
+      - name: get pnpm store directory
+        id: pnpm-store-path
+        run: echo "value=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-store-path.outputs.value }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store
+      - name: install dependencies
+        run: pnpm install
+      - name: typecheck
+        run: pnpm run typecheck
+      - name: build
+        run: pnpm run build
+      - name: test
+        run: pnpm run test
+      - name: code coverage
+        uses: codecov/codecov-action@v3.1.4
+      - name: upload changes
+        if: inputs.upload
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 3
+          name: ci
+          path: lib/*
