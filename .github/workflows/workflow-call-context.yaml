@@ -16,6 +16,9 @@ on:
       environment:
         description: 'version'
         value: ${{ jobs.main.outputs.environment }}
+      ref:
+        description: 'ref'
+        value: ${{ jobs.main.outputs.ref }}
 jobs:
   main:
     permissions:
