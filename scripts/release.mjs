@@ -13,7 +13,8 @@ const error = (message) => {
 
 async function main() {
   const args = arg({
-    '--dry-run': Boolean
+    '--dry-run': Boolean,
+    '--access': String
   })
 
   let version = args._[0]
@@ -26,17 +27,17 @@ async function main() {
     error(`Incorrect version "${version}"`)
   }
 
+  const access = args['--access'] ?? 'public'
+
+  if (!['public', 'restricted'].includes(access)) {
+    throw new Error(`Access should be either 'public' or 'restricted'.`)
+  }
+
   version = semver.clean(version)
 
   const packageJsonPath = path.join(process.cwd(), 'package.json')
 
   const packageJson = await fse.readJson(packageJsonPath)
-
-  if (packageJson.version === version) {
-    error(
-      `Package version from "${version}" matches the current version "${packageJson.version}"`
-    )
-  }
 
   console.log(`Releasing ${packageJson.name}@${version}`)
 
@@ -50,18 +51,13 @@ async function main() {
     packageJsonPath
   ])
 
-  await execa('pnpm', ['run', 'build'])
-
   await execa(
-    'pnpm',
+    'npm',
     [
       'publish',
       '--provenance',
-      '--no-git-checks',
       '--access',
-      'public',
-      '--publish-branch',
-      'trunk',
+      access,
       args['--dry-run'] ? '--dry-run' : undefined
     ].filter((value) => value !== undefined)
   )

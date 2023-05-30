@@ -1,4 +1,4 @@
-name: release
+name: ci
 
 on:
   push:
@@ -14,9 +14,9 @@ on:
       - README.md
       - LICENSE
 
-# Remove default permissions of GITHUB_TOKEN for security
-# https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-permissions: {}
+permissions:
+  contents: read
+  packages: read
 
 env:
   # 7 GiB by default on GitHub, setting to 6 GiB
@@ -26,16 +26,12 @@ env:
 jobs:
   context:
     uses: ./.github/workflows/workflow-call-context.yaml
-    permissions:
-      contents: read
   ci:
     uses: ./.github/workflows/workflow-call-ci.yaml
     needs:
       - context
-    permissions:
-      contents: read
     with:
       ref: ${{ needs.context.outputs.ref }}
       node-version: ${{ needs.context.outputs.node-version }}
       pnpm-version: ${{ needs.context.outputs.pnpm-version }}
-      upload: false
+      upload-context: false

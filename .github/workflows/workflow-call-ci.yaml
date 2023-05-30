@@ -10,13 +10,14 @@ on:
       pnpm-version:
         required: true
         type: string
-      upload:
+      upload-context:
         required: true
         type: boolean
         default: false
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   main:
@@ -30,6 +31,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ inputs.node-version }}
+      - name: write .npmrc
+        run: |
+          cat << EOF > "$HOME/.npmrc"
+            //npm.pkg.github.com/:_authToken=$GITHUB_TOKEN
+            @escapace:registry=https://npm.pkg.github.com
+            always-auth=true
+          EOF
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: install pnpm
         uses: pnpm/action-setup@v2.2.4
         with:
@@ -56,9 +66,9 @@ jobs:
       - name: code coverage
         uses: codecov/codecov-action@v3.1.4
       - name: upload changes
-        if: inputs.upload
+        if: inputs.upload-context
         uses: actions/upload-artifact@v3
         with:
           retention-days: 3
-          name: ci
+          name: context
           path: lib/*
