@@ -1,24 +1,24 @@
 on:
   workflow_call:
     outputs:
+      commitish:
+        description: 'short github sha'
+        value: ${{ jobs.main.outputs.commitish }}
+      environment:
+        description: 'version'
+        value: ${{ jobs.main.outputs.environment }}
       node-version:
         description: 'node.js version'
         value: ${{ jobs.main.outputs.node-version }}
       pnpm-version:
         description: 'pnpm version'
         value: ${{ jobs.main.outputs.pnpm-version }}
-      commitish:
-        description: 'short github sha'
-        value: ${{ jobs.main.outputs.commitish }}
-      version:
-        description: 'version'
-        value: ${{ jobs.main.outputs.version }}
-      environment:
-        description: 'version'
-        value: ${{ jobs.main.outputs.environment }}
       ref:
         description: 'ref'
         value: ${{ jobs.main.outputs.ref }}
+      version:
+        description: 'version'
+        value: ${{ jobs.main.outputs.version }}
 jobs:
   main:
     permissions:

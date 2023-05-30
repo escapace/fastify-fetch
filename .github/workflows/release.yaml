@@ -5,10 +5,6 @@ on:
     tags:
       - 'v*'
 
-# Remove default permissions of GITHUB_TOKEN for security
-# https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-permissions: {}
-
 env:
   # 7 GiB by default on GitHub, setting to 6 GiB
   # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
@@ -17,20 +13,16 @@ env:
 jobs:
   context:
     uses: ./.github/workflows/workflow-call-context.yaml
-    permissions:
-      contents: read
   ci:
     if: needs.context.outputs.environment == 'production'
     uses: ./.github/workflows/workflow-call-ci.yaml
     needs:
       - context
-    permissions:
-      contents: read
     with:
       ref: ${{ needs.context.outputs.ref }}
       node-version: ${{ needs.context.outputs.node-version }}
       pnpm-version: ${{ needs.context.outputs.pnpm-version }}
-      upload: true
+      upload-context: true
   release:
     if: needs.context.outputs.environment == 'production'
     runs-on: ubuntu-latest
@@ -40,6 +32,7 @@ jobs:
     permissions:
       id-token: write
       contents: write
+      packages: write
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -65,23 +58,34 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store
-      - name: install dependencies
-        run: pnpm install
       - name: restore lib cache
         uses: actions/download-artifact@v3
         with:
-          name: ci
+          name: context
           path: lib
-      - name: write .npmrc
+      - name: publish
         run: |
           cat << EOF > "$HOME/.npmrc"
-            //registry.npmjs.org/:_authToken=$NPM_TOKEN
+            //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+            //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}
+            @escapace:registry=https://npm.pkg.github.com
+            provenance=true
+            always-auth=true
           EOF
+
+          pnpm install
+
+          cat << EOF > "$HOME/.npmrc"
+            //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+            //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}
+            @escapace:registry=https://registry.npmjs.org
+            provenance=true
+            always-auth=true
+          EOF
+
+          pnpm run release ${{ needs.context.outputs.version }}
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: pnpm release
-        run: |
-          pnpm run release -- ${{ needs.context.outputs.version }}
+          NPM_CONFIG_PROVENANCE: true
       - name: github release
         run: |
           pnpm exec changelogithub
