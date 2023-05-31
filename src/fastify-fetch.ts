@@ -1,4 +1,4 @@
-import dataUriToBuffer from 'data-uri-to-buffer'
+import { dataUriToBuffer } from 'data-uri-to-buffer'
 import fp from 'fastify-plugin'
 import {
   fetch,
@@ -8,12 +8,12 @@ import {
   RequestInit,
   Response
 } from 'undici'
-import { promisify } from 'util'
+import { promisify } from 'node:util'
 import {
   brotliDecompress as _brotliDecompress,
   gunzip as _gunzip,
   inflate as _inflate
-} from 'zlib'
+} from 'node:zlib'
 import type { Options } from './types'
 
 type Decoder = (value: Buffer) => Promise<Buffer>
