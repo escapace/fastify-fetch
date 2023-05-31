@@ -10,10 +10,9 @@ on:
       pnpm-version:
         required: true
         type: string
-      upload-context:
-        required: true
-        type: boolean
-        default: false
+      version:
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -65,10 +64,15 @@ jobs:
         run: pnpm run test
       - name: code coverage
         uses: codecov/codecov-action@v3.1.4
-      - name: upload changes
-        if: inputs.upload-context
+      - name: pnpm pack
+        if: inputs.version != ''
+        run: |
+          echo "$(jq '.version="${{ inputs.version }}"' package.json)" > package.json
+          pnpm pack
+      - name: upload
+        if: inputs.version != ''
         uses: actions/upload-artifact@v3
         with:
           retention-days: 3
-          name: context
-          path: lib/*
+          name: package
+          path: '*.tgz'

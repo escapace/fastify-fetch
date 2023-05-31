@@ -1,6 +1,9 @@
 on:
   workflow_call:
     outputs:
+      changelog:
+        description: 'short github sha'
+        value: ${{ jobs.main.outputs.changelog }}
       commitish:
         description: 'short github sha'
         value: ${{ jobs.main.outputs.commitish }}
@@ -13,6 +16,9 @@ on:
       pnpm-version:
         description: 'pnpm version'
         value: ${{ jobs.main.outputs.pnpm-version }}
+      prerelease:
+        description: 'is prerelease'
+        value: ${{ jobs.main.outputs.prerelease }}
       ref:
         description: 'ref'
         value: ${{ jobs.main.outputs.ref }}
@@ -25,10 +31,12 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     outputs:
+      changelog: ${{ steps.action-context.outputs.changelog }}
       commitish: ${{ steps.action-context.outputs.commitish }}
       environment: ${{ steps.action-context.outputs.environment }}
       node-version: ${{ steps.node-version.outputs.value }}
       pnpm-version: ${{ steps.pnpm-version.outputs.value }}
+      prerelease: ${{ fromJSON(steps.action-context.outputs.prerelease) }}
       ref: ${{ steps.ref.outputs.value }}
       version: ${{ steps.action-context.outputs.version }}
     steps:
@@ -47,7 +55,9 @@ jobs:
           ref: ${{ steps.ref.outputs.value }}
           fetch-depth: 0
       - id: action-context
-        uses: escapace/action-context@v0.4.0
+        uses: escapace/action-context@v0.6.1
+        with:
+          token: ${{ github.token }}
       - id: node-version
         name: node-version
         shell: bash
