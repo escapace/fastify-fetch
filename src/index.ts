@@ -1,6 +1,8 @@
 import { fetch } from 'undici'
 import { fastifyFetch } from './fastify-fetch'
 
+export { fromNodeHeaders, toNodeHeaders } from './headers'
+
 export type Fetch = typeof fetch
 
 declare module 'fastify/types/instance' {

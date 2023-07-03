@@ -295,6 +295,32 @@ describe('./src/index.spec.ts', () => {
     assert.equal(await response.text(), 'hello world')
   })
 
+  it('same name cookie', async () => {
+    const app = fastify()
+
+    await app.register(fastifyFetch)
+
+    const output = 'yummy_cookie=choco; yummy_cookie=strawberry'
+
+    app.get('/hello', (req, res) => {
+      res.raw.writeHead(200, { 'Content-Type': 'text/plain' })
+      res.raw.end(req.headers.cookie)
+    })
+
+    const response = await app.fetch(
+      new URL('https://example.com:8080/hello'),
+      {
+        method: 'GET',
+        headers: {
+          Cookie: output
+        }
+      }
+    )
+
+    assert.ok(response.ok)
+    assert.equal(await response.text(), output)
+  })
+
   // it('should decompress deflate raw response', async () => {
   //   const app = fastify()
   //
