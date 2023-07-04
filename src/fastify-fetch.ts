@@ -1,21 +1,21 @@
 import { dataUriToBuffer } from 'data-uri-to-buffer'
 import fp from 'fastify-plugin'
-import {
-  fetch,
-  Headers,
-  Request,
-  RequestInfo,
-  RequestInit,
-  Response
-} from 'undici'
 import { promisify } from 'node:util'
 import {
   brotliDecompress as _brotliDecompress,
   gunzip as _gunzip,
   inflate as _inflate
 } from 'node:zlib'
-import type { Options } from './types'
+import {
+  Headers,
+  Request,
+  RequestInfo,
+  RequestInit,
+  Response,
+  fetch
+} from 'undici'
 import { fromNodeHeaders, toNodeHeaders } from './headers'
+import type { Options } from './types'
 
 type Decoder = (value: Buffer) => Promise<Buffer>
 
@@ -137,10 +137,15 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
         })
 
         const headers = fromNodeHeaders(response.headers)
-
         const statusText = response.statusMessage
         const status = response.statusCode
         const payload = await decompressPayload(response.rawPayload, headers)
+
+        if (headers.has('Content-Length') && payload !== undefined) {
+          const contentLength = payload.byteLength
+
+          headers.set('Content-Length', contentLength.toString())
+        }
 
         return new Response(payload, {
           headers,
