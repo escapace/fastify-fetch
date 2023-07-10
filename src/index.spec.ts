@@ -1,6 +1,7 @@
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import fastify from 'fastify'
+import { range, rangeRight } from 'lodash-es'
 import { URL } from 'url'
 import zlib from 'zlib'
 import { fastifyFetch } from './index'
@@ -14,7 +15,14 @@ describe('./src/index.spec.ts', () => {
     this.timeout(4000)
 
     const app = fastify()
-    await app.register(fastifyFetch, { match: () => true })
+    await app.register(fastifyFetch, {
+      match: (url, request) => {
+        assert.equal(url.hostname, 'example.com')
+        assert.equal(request.url, url.toString())
+
+        return true
+      }
+    })
 
     app.get('/hello', (_req, res) => {
       res.raw.writeHead(200, { 'Content-Type': 'text/plain' })
@@ -368,8 +376,183 @@ describe('./src/index.spec.ts', () => {
 
     const response = await app.fetch('https://example.com/brotli')
     assert.ok(response.ok)
+    assert.notOk(response.redirected)
     assert.equal(response.headers.get('content-type'), 'text/plain')
     assert.equal(response.headers.get('content-encoding'), null)
+    assert.equal(await response.text(), 'hello world')
+  })
+
+  it('should decompress redirected brotli response', async () => {
+    const app = fastify()
+
+    await app.register(fastifyFetch)
+
+    const number = 5
+
+    rangeRight(number).forEach((i) => {
+      app.get(`/${i}`, (_req, res) => {
+        res.raw.statusCode = 308
+        res.raw.setHeader('Location', `/${i === 1 ? 'brotli' : i - 1}`)
+        res.raw.end()
+      })
+    })
+
+    app.get('/brotli', (_req, res) => {
+      res.raw.statusCode = 200
+      res.raw.setHeader('Content-Type', 'text/plain')
+      res.raw.setHeader('Content-Encoding', 'br')
+
+      zlib.brotliCompress('hello world', (err, buffer) => {
+        if (err != null) {
+          throw err
+        }
+
+        res.raw.end(buffer)
+      })
+    })
+
+    const response = await app.fetch(`https://example.com/${number - 1}`)
+
+    assert.ok(response.ok)
+    assert.ok(response.redirected)
+    assert.equal(response.headers.get('content-type'), 'text/plain')
+    assert.equal(response.headers.get('content-encoding'), null)
+    assert.equal(await response.text(), 'hello world')
+  })
+
+  it('should error on too many redirects', async () => {
+    const app = fastify()
+
+    await app.register(fastifyFetch)
+
+    const number = 10
+
+    rangeRight(number).forEach((i) => {
+      app.get(`/${i}`, (_req, res) => {
+        res.raw.statusCode = 308
+        res.raw.setHeader('Location', `/${i === 1 ? 'brotli' : i - 1}`)
+        res.raw.end()
+      })
+    })
+
+    const response = await app.fetch(`https://example.com/${number - 1}`)
+
+    assert.notOk(response.ok)
+  })
+
+  it('should error on redirects', async () => {
+    const app = fastify()
+
+    await app.register(fastifyFetch)
+
+    const number = 2
+
+    rangeRight(number).forEach((i) => {
+      app.get(`/${i}`, (_req, res) => {
+        res.raw.statusCode = 308
+        res.raw.setHeader('Location', `/${i === 1 ? 'brotli' : i - 1}`)
+        res.raw.end()
+      })
+    })
+
+    const response = await app.fetch(`https://example.com/${number - 1}`, {
+      redirect: 'error'
+    })
+
+    assert.notOk(response.ok)
+  })
+
+  it('should return response on manual redirects', async () => {
+    const app = fastify()
+
+    await app.register(fastifyFetch)
+
+    const number = 4
+
+    range(number).forEach((i) => {
+      app.get(`/${i}`, (_req, res) => {
+        res.raw.statusCode = 308
+        res.raw.setHeader('Location', `/${i === 1 ? 'brotli' : i + 1}`)
+        res.raw.end()
+      })
+    })
+
+    const response = await app.fetch(`https://example.com/0`, {
+      redirect: 'manual'
+    })
+
+    assert.equal(response.status, 308)
+    assert.equal(response.headers.get('location'), '/1')
+    assert.notOk(response.ok)
+  })
+
+  it('should return response on no location redirects', async () => {
+    const app = fastify()
+
+    await app.register(fastifyFetch)
+
+    app.get('/redirect', (_req, res) => {
+      res.raw.statusCode = 303
+      res.raw.setHeader('Content-Type', 'text/plain')
+      res.raw.setHeader('Content-Encoding', 'br')
+
+      zlib.brotliCompress('hello world', (err, buffer) => {
+        if (err != null) {
+          throw err
+        }
+
+        res.raw.end(buffer)
+      })
+    })
+
+    const response = await app.fetch('https://example.com/redirect')
+
+    assert.equal(response.status, 303)
+    assert.equal(response.headers.get('location'), undefined)
+    // assert.equal(response.headers.get('content-encoding'), 'qwe')
+    assert.equal(await response.text(), 'hello world')
+    assert.notOk(response.ok)
+  })
+
+  it('should decompress brotli, gzip response', async () => {
+    const app = fastify()
+
+    await app.register(fastifyFetch)
+
+    app.get('/compressed', (_req, res) => {
+      res.raw.statusCode = 200
+      res.raw.setHeader('Content-Type', 'text/plain')
+      res.raw.setHeader('Content-Encoding', 'br, gzip')
+
+      res.raw.end(zlib.gzipSync(zlib.brotliCompressSync('hello world')))
+    })
+
+    const response = await app.fetch('https://example.com/compressed')
+    assert.ok(response.ok)
+    assert.notOk(response.redirected)
+    assert.equal(response.headers.get('content-type'), 'text/plain')
+    assert.equal(response.headers.get('content-encoding'), null)
+    assert.equal(await response.text(), 'hello world')
+  })
+
+  it('should partially decompress brotli, asd, gzip response', async () => {
+    const app = fastify()
+
+    await app.register(fastifyFetch)
+
+    app.get('/compressed', (_req, res) => {
+      res.raw.statusCode = 200
+      res.raw.setHeader('Content-Type', 'text/plain')
+      res.raw.setHeader('Content-Encoding', 'gzip, asd, br')
+
+      res.raw.end(zlib.brotliCompressSync('hello world'))
+    })
+
+    const response = await app.fetch('https://example.com/compressed')
+    assert.ok(response.ok)
+    assert.notOk(response.redirected)
+    assert.equal(response.headers.get('content-type'), 'text/plain')
+    assert.equal(response.headers.get('content-encoding'), 'gzip,asd')
     assert.equal(await response.text(), 'hello world')
   })
 
