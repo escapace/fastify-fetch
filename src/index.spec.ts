@@ -54,6 +54,37 @@ describe('./src/index.spec.ts', () => {
     assert.deepEqual(await res.text(), 'hello')
   })
 
+  it('cookies', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch)
+
+    app.get('/hello', (req, res) => {
+      assert.equal(req.headers.cookie, 'name=value; name2=value2; name=value3')
+
+      res.raw.setHeader('Set-Cookie', [
+        'id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT',
+        'id=a3fWb; ; Domain=somecompany.co.uk; Expires=Wed, 21 Oct 2015 07:28:00 GMT'
+      ])
+      res.raw.writeHead(200, { 'Content-Type': 'text/plain' })
+      res.raw.end('hello')
+    })
+
+    const res = await app.fetch('https://example.com:8080/hello', {
+      credentials: 'same-origin',
+      headers: {
+        cookie: ['name=value; name2=value2; name=value3']
+      },
+      method: 'GET'
+    })
+
+    assert.ok(res.ok)
+    assert.deepEqual(await res.text(), 'hello')
+    assert.deepEqual(
+      res.headers.get('set-cookie'),
+      'id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT, id=a3fWb; ; Domain=somecompany.co.uk; Expires=Wed, 21 Oct 2015 07:28:00 GMT'
+    )
+  })
+
   it('basic async await (errored)', async () => {
     const app = fastify()
     await app.register(fastifyFetch)
