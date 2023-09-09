@@ -50,7 +50,7 @@ jobs:
             echo "value=${GITHUB_REF}" >> $GITHUB_OUTPUT
           fi
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ steps.ref.outputs.value }}
           fetch-depth: 0
