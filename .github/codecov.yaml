@@ -10,9 +10,8 @@ coverage:
     changes: false
 
 comment:
-  layout: "header, diff, tree"
-  behavior: default  # update if exists else create new
+  layout: 'header, diff, tree'
+  behavior: default # update if exists else create new
 
 ignore:
-  - "./coverage/tmp/"
-
+  - './coverage/tmp/'

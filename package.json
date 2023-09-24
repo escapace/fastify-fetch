@@ -2,8 +2,13 @@
   "name": "fastify-fetch",
   "description": "",
   "version": "0.0.0",
-  "author": "escapace <opensource@escapace.com>",
-  "bugs": "https://github.com/escapace/fastify-fetch/issues",
+  "author": {
+    "name": "escapace",
+    "email": "opensource@escapace.com"
+  },
+  "bugs": {
+    "url": "https://github.com/escapace/fastify-fetch/issues"
+  },
   "dependencies": {
     "undici": "^5.25.1"
   },
@@ -49,8 +54,8 @@
     "typescript": "5.2.2"
   },
   "engines": {
-    "node": ">=18.2.0",
-    "pnpm": ">=8.6.0"
+    "node": ">=18.18.0",
+    "pnpm": ">=8.7.6"
   },
   "exports": {
     ".": {
@@ -66,7 +71,10 @@
   "license": "MPL-2.0",
   "module": "lib/esm/index.mjs",
   "private": false,
-  "repository": "https://github.com/escapace/fastify-fetch.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/escapace/fastify-fetch.git"
+  },
   "scripts": {
     "build": "node ./scripts/build.mjs",
     "lint": "ls-lint && eslint 'src/**/*.ts?(x)'",
