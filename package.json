@@ -6,9 +6,7 @@
     "name": "escapace",
     "email": "opensource@escapace.com"
   },
-  "bugs": {
-    "url": "https://github.com/escapace/fastify-fetch/issues"
-  },
+  "bugs": "https://github.com/escapace/fastify-fetch/issues",
   "dependencies": {
     "undici": "^5.25.1"
   },
@@ -71,10 +69,7 @@
   "license": "MPL-2.0",
   "module": "lib/esm/index.mjs",
   "private": false,
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/escapace/fastify-fetch.git"
-  },
+  "repository": "escapace/fastify-fetch",
   "scripts": {
     "build": "node ./scripts/build.mjs",
     "lint": "ls-lint && eslint 'src/**/*.ts?(x)'",
