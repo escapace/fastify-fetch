@@ -11,8 +11,8 @@
     "undici": "^5.25.4"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.7.2",
-    "@commitlint/config-conventional": "17.7.0",
+    "@commitlint/cli": "18.2.0",
+    "@commitlint/config-conventional": "18.1.0",
     "@fastify/multipart": "8.0.0",
     "@ls-lint/ls-lint": "2.1.0",
     "@types/chai": "4.3.6",
