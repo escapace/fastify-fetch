@@ -13,7 +13,7 @@
   "devDependencies": {
     "@commitlint/cli": "18.4.3",
     "@commitlint/config-conventional": "18.4.3",
-    "@fastify/multipart": "8.0.0",
+    "@fastify/multipart": "8.1.0",
     "@ls-lint/ls-lint": "2.2.2",
     "@types/chai": "4.3.11",
     "@types/chai-as-promised": "7.1.8",
