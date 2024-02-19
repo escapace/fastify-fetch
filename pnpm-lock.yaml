@@ -59,8 +59,8 @@ devDependencies:
     specifier: 3.8.2
     version: 3.8.2
   data-uri-to-buffer:
-    specifier: 5.0.1
-    version: 5.0.1
+    specifier: 6.0.2
+    version: 6.0.2
   esbuild:
     specifier: 0.19.7
     version: 0.19.7
@@ -1867,8 +1867,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /data-uri-to-buffer@5.0.1:
-    resolution: {integrity: sha512-a9l6T1qqDogvvnw0nKlfZzqsyikEBZBClF39V3TFoKhDtGBqHu2HkuomJc02j5zft8zrUaXEuoicLeW54RkzPg==}
+  /data-uri-to-buffer@6.0.2:
+    resolution: {integrity: sha512-7hvf7/GW8e86rW0ptuwS3OcBGDjIi6SZva7hCyWC0yYry2cOPmLIjXAUHI6DK2HsnwJd9ifmt57i8eV2n4YNpw==}
     engines: {node: '>= 14'}
     dev: true
 
