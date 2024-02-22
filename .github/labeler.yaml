@@ -1,5 +1,0 @@
-github-actions:
-  - .github/workflows/*.yml
-
-test:
-  - src/**/*.spec.ts
