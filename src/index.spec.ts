@@ -1,4 +1,4 @@
-import chai from 'chai'
+import * as chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import fastify from 'fastify'
 import { range, rangeRight } from 'lodash-es'
@@ -251,7 +251,14 @@ describe('./src/index.spec.ts', () => {
 
     assert.equal(response.status, 200)
     assert.equal(response.headers.get('Content-Type'), 'image/gif')
-    assert.instanceOf(await response.arrayBuffer(), ArrayBuffer)
+    const responseBuffer = await response.arrayBuffer()
+
+    assert.equal(
+      Buffer.from(responseBuffer).toString('base64'),
+      'R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
+    )
+
+    assert.instanceOf(responseBuffer, ArrayBuffer)
   })
 
   it('rejected on unsupported url scheme', async () => {

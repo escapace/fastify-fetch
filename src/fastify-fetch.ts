@@ -195,7 +195,7 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
       if (url.protocol === 'data:') {
         const data = dataUriToBuffer(request.url)
 
-        return new Response(data, {
+        return new Response(data.buffer, {
           headers: { 'Content-Type': data.typeFull }
         })
       }
