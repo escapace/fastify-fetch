@@ -48,7 +48,7 @@ jobs:
         id: pnpm-store-path
         run: echo "value=$(pnpm store path)" >> $GITHUB_OUTPUT
       - name: pnpm cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.pnpm-store-path.outputs.value }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
