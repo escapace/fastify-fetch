@@ -6,7 +6,7 @@ updates:
       interval: weekly
       day: saturday
       time: '07:00'
-      timezone: GMT
+      timezone: Etc/UTC
     labels:
       - 'dependencies'
       - 'github-actions'

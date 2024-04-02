@@ -23,6 +23,8 @@ jobs:
       node-version: ${{ needs.context.outputs.node-version }}
       pnpm-version: ${{ needs.context.outputs.pnpm-version }}
       version: ${{ needs.context.outputs.version }}
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   release:
     if: needs.context.outputs.environment == 'production'
     runs-on: ubuntu-latest
@@ -46,6 +48,18 @@ jobs:
         run: |
           npm install -g npm
           npm --version
+      # - name: publish to github packages
+      #   run: |
+      #     cat << EOF > "$HOME/.npmrc"
+      #       //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+      #       @escapace:registry=https://npm.pkg.github.com
+      #       provenance=true
+      #       always-auth=true
+      #     EOF
+      #
+      #     npm publish --provenance --access public *.tgz
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: publish to npmjs
         run: |
           cat << EOF > "$HOME/.npmrc"

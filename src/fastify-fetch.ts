@@ -16,7 +16,7 @@ import {
   Response,
   fetch
 } from 'undici'
-import symbols from 'undici/lib/fetch/symbols.js'
+import symbols from 'undici/lib/web/fetch/symbols.js'
 import { fromNodeHeaders, toNodeHeaders } from './headers'
 import type { Options } from './types'
 
