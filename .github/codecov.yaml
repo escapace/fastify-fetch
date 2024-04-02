@@ -1,17 +1,16 @@
 coverage:
   precision: 2
-  round: down
   range: 70...100
-
+  round: down
   status:
-    # Learn more at http://docs.codecov.io/docs/codecov-yaml
     project: true
     patch: true
     changes: false
 
 comment:
   layout: 'header, diff, tree'
-  behavior: default # update if exists else create new
+  behavior: default
+  require_changes: true
 
 ignore:
   - './coverage/tmp/'

@@ -2,7 +2,7 @@ on:
   workflow_call:
     outputs:
       changelog:
-        description: 'short github sha'
+        description: 'changelog'
         value: ${{ jobs.main.outputs.changelog }}
       commitish:
         description: 'short github sha'
