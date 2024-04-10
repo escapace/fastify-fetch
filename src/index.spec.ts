@@ -125,7 +125,8 @@ describe('./src/index.spec.ts', () => {
     assert.equal(response.status, 200)
     assert.equal(response.statusText, 'Super')
     assert.deepEqual(Object.fromEntries(response.headers.entries()), {
-      date: `${response.headers.get('date') as string}`,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      date: `${response.headers.get('date')!}`,
       connection: 'keep-alive',
       'x-extra': 'hello',
       'content-type': 'text/plain',
