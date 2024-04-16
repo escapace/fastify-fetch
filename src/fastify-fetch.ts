@@ -1,5 +1,5 @@
 import { dataUriToBuffer } from 'data-uri-to-buffer'
-import { FastifyInstance, LightMyRequestResponse } from 'fastify'
+import type { FastifyInstance, LightMyRequestResponse } from 'fastify'
 import fp from 'fastify-plugin'
 import assert from 'node:assert'
 import { promisify } from 'node:util'
@@ -9,10 +9,10 @@ import {
   inflate as _inflate
 } from 'node:zlib'
 import {
-  Headers,
+  type Headers,
   Request,
-  RequestInfo,
-  RequestInit,
+  type RequestInfo,
+  type RequestInit,
   Response,
   fetch
 } from 'undici'
@@ -30,7 +30,7 @@ const supportedSchemas = new Set(['data:', 'http:', 'https:'])
 
 const decompressPayload = async (rawPayload: Buffer, headers: Headers) => {
   if (rawPayload.length === 0) {
-    return undefined
+    return
   }
 
   const codings: Array<string | undefined> =
@@ -93,7 +93,7 @@ const httpRedirectFetch = async (
   app: FastifyInstance,
   request: Request,
   options: Options
-): Promise<[LightMyRequestResponse, URL[]] | 'network-error'> => {
+): Promise<'network-error' | [LightMyRequestResponse, URL[]]> => {
   const originalURL = new URL(request.url)
   const list = [originalURL]
 
@@ -109,10 +109,10 @@ const httpRedirectFetch = async (
     | 'PUT'
 
   const originalResponse: LightMyRequestResponse = await app.inject({
-    url: originalURL.toString(),
     headers,
+    method,
     payload,
-    method
+    url: originalURL.toString()
   })
 
   if (!redirectStatus.includes(originalResponse.statusCode)) {
@@ -149,10 +149,10 @@ const httpRedirectFetch = async (
     list.push(url)
 
     response = await app.inject({
-      url: url.toString(),
       headers,
+      method,
       payload,
-      method
+      url: url.toString()
     })
 
     if (!redirectStatus.includes(response.statusCode)) {
@@ -230,8 +230,8 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
 
         const response = new Response(payload, {
           headers,
-          statusText,
-          status
+          status,
+          statusText
         })
 
         if (list.length > 1) {

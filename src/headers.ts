@@ -1,4 +1,4 @@
-import type { OutgoingHttpHeaders } from 'http'
+import type { OutgoingHttpHeaders } from 'node:http'
 import { Headers } from 'undici'
 
 // https://github.com/vercel/next.js/blob/canary/packages/next/src/server/web/utils.ts
@@ -84,7 +84,7 @@ export function fromNodeHeaders(nodeHeaders: OutgoingHttpHeaders): Headers {
   for (const [key, value] of Object.entries(nodeHeaders)) {
     const values = Array.isArray(value) ? value : [value]
     for (let v of values) {
-      if (typeof v === 'undefined') continue
+      if (v === undefined) continue
       if (typeof v === 'number') {
         v = v.toString()
       }
