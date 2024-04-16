@@ -1,6 +1,6 @@
-import { fetch, Request } from 'undici'
+import type { fetch, Request } from 'undici'
 
 export interface Options {
-  match?: (url: URL, request: Request) => boolean
   fetch?: typeof fetch
+  match?: (url: URL, request: Request) => boolean
 }

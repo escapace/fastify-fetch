@@ -2,8 +2,8 @@ import * as chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import fastify from 'fastify'
 import { range, rangeRight } from 'lodash-es'
-import { URL } from 'url'
-import zlib from 'zlib'
+import { URL } from 'node:url'
+import zlib from 'node:zlib'
 import { fastifyFetch } from './index'
 
 chai.use(chaiAsPromised)
@@ -24,52 +24,55 @@ describe('./src/index.spec.ts', () => {
       }
     })
 
-    app.get('/hello', (_req, res) => {
-      res.raw.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.raw.end('hello')
+    app.get('/hello', (_request, _response) => {
+      _response.raw.writeHead(200, { 'Content-Type': 'text/plain' })
+      _response.raw.end('hello')
     })
 
-    const res = await app.fetch('https://example.com:8080/world', {
+    const response = await app.fetch('https://example.com:8080/world', {
       method: 'GET'
     })
 
-    assert.notOk(res.ok)
-    assert.deepEqual(res.status, 404)
+    assert.notOk(response.ok)
+    assert.deepEqual(response.status, 404)
   })
 
   it('basic async await', async () => {
     const app = fastify()
     await app.register(fastifyFetch)
 
-    app.get('/hello', (_req, res) => {
-      res.raw.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.raw.end('hello')
+    app.get('/hello', (_request, _response) => {
+      _response.raw.writeHead(200, { 'Content-Type': 'text/plain' })
+      _response.raw.end('hello')
     })
 
-    const res = await app.fetch('https://example.com:8080/hello', {
+    const response = await app.fetch('https://example.com:8080/hello', {
       method: 'GET'
     })
 
-    assert.ok(res.ok)
-    assert.deepEqual(await res.text(), 'hello')
+    assert.ok(response.ok)
+    assert.deepEqual(await response.text(), 'hello')
   })
 
   it('cookies', async () => {
     const app = fastify()
     await app.register(fastifyFetch)
 
-    app.get('/hello', (req, res) => {
-      assert.equal(req.headers.cookie, 'name=value; name2=value2; name=value3')
+    app.get('/hello', (request, response) => {
+      assert.equal(
+        request.headers.cookie,
+        'name=value; name2=value2; name=value3'
+      )
 
-      res.raw.setHeader('Set-Cookie', [
+      response.raw.setHeader('Set-Cookie', [
         'id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT',
         'id=a3fWb; ; Domain=somecompany.co.uk; Expires=Wed, 21 Oct 2015 07:28:00 GMT'
       ])
-      res.raw.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.raw.end('hello')
+      response.raw.writeHead(200, { 'Content-Type': 'text/plain' })
+      response.raw.end('hello')
     })
 
-    const res = await app.fetch('https://example.com:8080/hello', {
+    const response = await app.fetch('https://example.com:8080/hello', {
       credentials: 'same-origin',
       headers: {
         cookie: ['name=value; name2=value2; name=value3']
@@ -77,10 +80,10 @@ describe('./src/index.spec.ts', () => {
       method: 'GET'
     })
 
-    assert.ok(res.ok)
-    assert.deepEqual(await res.text(), 'hello')
+    assert.ok(response.ok)
+    assert.deepEqual(await response.text(), 'hello')
     assert.deepEqual(
-      res.headers.get('set-cookie'),
+      response.headers.get('set-cookie'),
       'id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT, id=a3fWb; ; Domain=somecompany.co.uk; Expires=Wed, 21 Oct 2015 07:28:00 GMT'
     )
   })
@@ -89,8 +92,8 @@ describe('./src/index.spec.ts', () => {
     const app = fastify()
     await app.register(fastifyFetch)
 
-    app.get('/hello', (_req, res) => {
-      res.raw.destroy(new Error('kaboom'))
+    app.get('/hello', (_request, response) => {
+      response.raw.destroy(new Error('kaboom'))
       // .connection.destroy()
     })
 
@@ -109,15 +112,15 @@ describe('./src/index.spec.ts', () => {
 
     const output = 'example.com:8080|/hello'
 
-    app.get('/hello', (req, res) => {
-      res.raw.statusMessage = 'Super'
-      res.raw.setHeader('x-extra', 'hello')
-      res.raw.writeHead(200, {
-        'Content-Type': 'text/plain',
-        'Content-Length': output.length
+    app.get('/hello', (request, response) => {
+      response.raw.statusMessage = 'Super'
+      response.raw.setHeader('x-extra', 'hello')
+      response.raw.writeHead(200, {
+        'Content-Length': output.length,
+        'Content-Type': 'text/plain'
       })
 
-      res.raw.end(`${req.raw.headers.host ?? ''}|${req.url}`)
+      response.raw.end(`${request.raw.headers.host ?? ''}|${request.url}`)
     })
 
     const response = await app.fetch('https://example.com:8080/hello')
@@ -125,12 +128,12 @@ describe('./src/index.spec.ts', () => {
     assert.equal(response.status, 200)
     assert.equal(response.statusText, 'Super')
     assert.deepEqual(Object.fromEntries(response.headers.entries()), {
+      connection: 'keep-alive',
+      'content-length': `${output.length}`,
+      'content-type': 'text/plain',
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       date: `${response.headers.get('date')!}`,
-      connection: 'keep-alive',
-      'x-extra': 'hello',
-      'content-type': 'text/plain',
-      'content-length': `${output.length}`
+      'x-extra': 'hello'
     })
 
     const textDecoder = new TextDecoder()
@@ -161,14 +164,14 @@ describe('./src/index.spec.ts', () => {
 
     await app.register(fastifyFetch)
 
-    app.get('/hello', (req, res) => {
-      res.raw.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.raw.end(req.headers.host)
+    app.get('/hello', (request, response) => {
+      response.raw.writeHead(200, { 'Content-Type': 'text/plain' })
+      response.raw.end(request.headers.host)
     })
 
     const response = await app.fetch('https://example.com/hello', {
-      method: 'GET',
-      headers: { host: 'test.example.com' }
+      headers: { host: 'test.example.com' },
+      method: 'GET'
     })
 
     assert.ok(response.ok)
@@ -182,9 +185,11 @@ describe('./src/index.spec.ts', () => {
 
     const output = 'example.com:8080|/hello?test=1234'
 
-    app.get('/hello', (req, res) => {
-      res.raw.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.raw.end(`${req.raw.headers.host ?? ''}|${req.raw.url ?? ''}`)
+    app.get('/hello', (request, response) => {
+      response.raw.writeHead(200, { 'Content-Type': 'text/plain' })
+      response.raw.end(
+        `${request.raw.headers.host ?? ''}|${request.raw.url ?? ''}`
+      )
     })
 
     const response = await app.fetch(
@@ -205,18 +210,18 @@ describe('./src/index.spec.ts', () => {
 
     const output = 'yummy_cookie=choco; tasty_cookie=strawberry'
 
-    app.get('/hello', (req, res) => {
-      res.raw.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.raw.end(req.headers.cookie)
+    app.get('/hello', (request, response) => {
+      response.raw.writeHead(200, { 'Content-Type': 'text/plain' })
+      response.raw.end(request.headers.cookie)
     })
 
     const response = await app.fetch(
       new URL('https://example.com:8080/hello'),
       {
-        method: 'GET',
         headers: {
           Cookie: output
-        }
+        },
+        method: 'GET'
       }
     )
 
@@ -229,9 +234,9 @@ describe('./src/index.spec.ts', () => {
 
     await app.register(fastifyFetch)
 
-    app.get('/hello', (req, res) => {
-      res.raw.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.raw.end(`${req.headers.host ?? '|'}|${req.url}`)
+    app.get('/hello', (request, response) => {
+      response.raw.writeHead(200, { 'Content-Type': 'text/plain' })
+      response.raw.end(`${request.headers.host ?? '|'}|${request.url}`)
     })
 
     const response = await app.fetch('https://example.com:8080/hello')
@@ -278,10 +283,10 @@ describe('./src/index.spec.ts', () => {
 
     await app.register(fastifyFetch)
 
-    app.get('/no-content-gzip', (_req, res) => {
-      res.raw.statusCode = 204
-      res.raw.setHeader('Content-Encoding', 'gzip')
-      res.raw.end()
+    app.get('/no-content-gzip', (_request, response) => {
+      response.raw.statusCode = 204
+      response.raw.setHeader('Content-Encoding', 'gzip')
+      response.raw.end()
     })
 
     const response = await app.fetch('https://example.com/no-content-gzip')
@@ -296,16 +301,16 @@ describe('./src/index.spec.ts', () => {
 
     await app.register(fastifyFetch)
 
-    app.get('/gzip', (_req, res) => {
-      res.raw.statusCode = 200
-      res.raw.setHeader('Content-Type', 'text/plain')
-      res.raw.setHeader('Content-Encoding', 'gzip')
-      zlib.gzip('hello world', (err, buffer) => {
-        if (err != null) {
-          throw err
+    app.get('/gzip', (_request, response) => {
+      response.raw.statusCode = 200
+      response.raw.setHeader('Content-Type', 'text/plain')
+      response.raw.setHeader('Content-Encoding', 'gzip')
+      zlib.gzip('hello world', (error, buffer) => {
+        if (error != null) {
+          throw error
         }
 
-        res.raw.end(buffer)
+        response.raw.end(buffer)
       })
     })
 
@@ -321,17 +326,17 @@ describe('./src/index.spec.ts', () => {
 
     await app.register(fastifyFetch)
 
-    app.get('/deflate', (_req, res) => {
-      res.raw.statusCode = 200
-      res.raw.setHeader('Content-Type', 'text/plain')
-      res.raw.setHeader('Content-Encoding', 'deflate')
+    app.get('/deflate', (_request, response) => {
+      response.raw.statusCode = 200
+      response.raw.setHeader('Content-Type', 'text/plain')
+      response.raw.setHeader('Content-Encoding', 'deflate')
 
-      zlib.deflate('hello world', (err, buffer) => {
-        if (err != null) {
-          throw err
+      zlib.deflate('hello world', (error, buffer) => {
+        if (error != null) {
+          throw error
         }
 
-        res.raw.end(buffer)
+        response.raw.end(buffer)
       })
     })
 
@@ -349,18 +354,18 @@ describe('./src/index.spec.ts', () => {
 
     const output = 'yummy_cookie=choco; yummy_cookie=strawberry'
 
-    app.get('/hello', (req, res) => {
-      res.raw.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.raw.end(req.headers.cookie)
+    app.get('/hello', (request, response) => {
+      response.raw.writeHead(200, { 'Content-Type': 'text/plain' })
+      response.raw.end(request.headers.cookie)
     })
 
     const response = await app.fetch(
       new URL('https://example.com:8080/hello'),
       {
-        method: 'GET',
         headers: {
           Cookie: output
-        }
+        },
+        method: 'GET'
       }
     )
 
@@ -399,17 +404,17 @@ describe('./src/index.spec.ts', () => {
 
     await app.register(fastifyFetch)
 
-    app.get('/brotli', (_req, res) => {
-      res.raw.statusCode = 200
-      res.raw.setHeader('Content-Type', 'text/plain')
-      res.raw.setHeader('Content-Encoding', 'br')
+    app.get('/brotli', (_request, response) => {
+      response.raw.statusCode = 200
+      response.raw.setHeader('Content-Type', 'text/plain')
+      response.raw.setHeader('Content-Encoding', 'br')
 
-      zlib.brotliCompress('hello world', (err, buffer) => {
-        if (err != null) {
-          throw err
+      zlib.brotliCompress('hello world', (error, buffer) => {
+        if (error != null) {
+          throw error
         }
 
-        res.raw.end(buffer)
+        response.raw.end(buffer)
       })
     })
 
@@ -428,25 +433,28 @@ describe('./src/index.spec.ts', () => {
 
     const number = 5
 
-    rangeRight(number).forEach((i) => {
-      app.get(`/${i}`, (_req, res) => {
-        res.raw.statusCode = 308
-        res.raw.setHeader('Location', `/${i === 1 ? 'brotli' : i - 1}`)
-        res.raw.end()
+    rangeRight(number).forEach((index) => {
+      app.get(`/${index}`, (_request, response) => {
+        response.raw.statusCode = 308
+        response.raw.setHeader(
+          'Location',
+          `/${index === 1 ? 'brotli' : index - 1}`
+        )
+        response.raw.end()
       })
     })
 
-    app.get('/brotli', (_req, res) => {
-      res.raw.statusCode = 200
-      res.raw.setHeader('Content-Type', 'text/plain')
-      res.raw.setHeader('Content-Encoding', 'br')
+    app.get('/brotli', (_request, response) => {
+      response.raw.statusCode = 200
+      response.raw.setHeader('Content-Type', 'text/plain')
+      response.raw.setHeader('Content-Encoding', 'br')
 
-      zlib.brotliCompress('hello world', (err, buffer) => {
-        if (err != null) {
-          throw err
+      zlib.brotliCompress('hello world', (error, buffer) => {
+        if (error != null) {
+          throw error
         }
 
-        res.raw.end(buffer)
+        response.raw.end(buffer)
       })
     })
 
@@ -466,11 +474,14 @@ describe('./src/index.spec.ts', () => {
 
     const number = 10
 
-    rangeRight(number).forEach((i) => {
-      app.get(`/${i}`, (_req, res) => {
-        res.raw.statusCode = 308
-        res.raw.setHeader('Location', `/${i === 1 ? 'brotli' : i - 1}`)
-        res.raw.end()
+    rangeRight(number).forEach((index) => {
+      app.get(`/${index}`, (_request, response) => {
+        response.raw.statusCode = 308
+        response.raw.setHeader(
+          'Location',
+          `/${index === 1 ? 'brotli' : index - 1}`
+        )
+        response.raw.end()
       })
     })
 
@@ -486,11 +497,14 @@ describe('./src/index.spec.ts', () => {
 
     const number = 2
 
-    rangeRight(number).forEach((i) => {
-      app.get(`/${i}`, (_req, res) => {
-        res.raw.statusCode = 308
-        res.raw.setHeader('Location', `/${i === 1 ? 'brotli' : i - 1}`)
-        res.raw.end()
+    rangeRight(number).forEach((index) => {
+      app.get(`/${index}`, (_request, response) => {
+        response.raw.statusCode = 308
+        response.raw.setHeader(
+          'Location',
+          `/${index === 1 ? 'brotli' : index - 1}`
+        )
+        response.raw.end()
       })
     })
 
@@ -508,11 +522,14 @@ describe('./src/index.spec.ts', () => {
 
     const number = 4
 
-    range(number).forEach((i) => {
-      app.get(`/${i}`, (_req, res) => {
-        res.raw.statusCode = 308
-        res.raw.setHeader('Location', `/${i === 1 ? 'brotli' : i + 1}`)
-        res.raw.end()
+    range(number).forEach((index) => {
+      app.get(`/${index}`, (_request, response) => {
+        response.raw.statusCode = 308
+        response.raw.setHeader(
+          'Location',
+          `/${index === 1 ? 'brotli' : index + 1}`
+        )
+        response.raw.end()
       })
     })
 
@@ -530,17 +547,17 @@ describe('./src/index.spec.ts', () => {
 
     await app.register(fastifyFetch)
 
-    app.get('/redirect', (_req, res) => {
-      res.raw.statusCode = 303
-      res.raw.setHeader('Content-Type', 'text/plain')
-      res.raw.setHeader('Content-Encoding', 'br')
+    app.get('/redirect', (_request, response) => {
+      response.raw.statusCode = 303
+      response.raw.setHeader('Content-Type', 'text/plain')
+      response.raw.setHeader('Content-Encoding', 'br')
 
-      zlib.brotliCompress('hello world', (err, buffer) => {
-        if (err != null) {
-          throw err
+      zlib.brotliCompress('hello world', (error, buffer) => {
+        if (error != null) {
+          throw error
         }
 
-        res.raw.end(buffer)
+        response.raw.end(buffer)
       })
     })
 
@@ -558,12 +575,12 @@ describe('./src/index.spec.ts', () => {
 
     await app.register(fastifyFetch)
 
-    app.get('/compressed', (_req, res) => {
-      res.raw.statusCode = 200
-      res.raw.setHeader('Content-Type', 'text/plain')
-      res.raw.setHeader('Content-Encoding', 'br, gzip')
+    app.get('/compressed', (_request, response) => {
+      response.raw.statusCode = 200
+      response.raw.setHeader('Content-Type', 'text/plain')
+      response.raw.setHeader('Content-Encoding', 'br, gzip')
 
-      res.raw.end(zlib.gzipSync(zlib.brotliCompressSync('hello world')))
+      response.raw.end(zlib.gzipSync(zlib.brotliCompressSync('hello world')))
     })
 
     const response = await app.fetch('https://example.com/compressed')
@@ -579,12 +596,12 @@ describe('./src/index.spec.ts', () => {
 
     await app.register(fastifyFetch)
 
-    app.get('/compressed', (_req, res) => {
-      res.raw.statusCode = 200
-      res.raw.setHeader('Content-Type', 'text/plain')
-      res.raw.setHeader('Content-Encoding', 'gzip, asd, br')
+    app.get('/compressed', (_request, response) => {
+      response.raw.statusCode = 200
+      response.raw.setHeader('Content-Type', 'text/plain')
+      response.raw.setHeader('Content-Encoding', 'gzip, asd, br')
 
-      res.raw.end(zlib.brotliCompressSync('hello world'))
+      response.raw.end(zlib.brotliCompressSync('hello world'))
     })
 
     const response = await app.fetch('https://example.com/compressed')

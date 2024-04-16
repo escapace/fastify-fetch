@@ -1,4 +1,4 @@
-import { fetch } from 'undici'
+import type { fetch } from 'undici'
 import { fastifyFetch } from './fastify-fetch'
 
 export { fromNodeHeaders, toNodeHeaders } from './headers'
