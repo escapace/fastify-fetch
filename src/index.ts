@@ -1,7 +1,7 @@
 import type { fetch } from 'undici'
 import { fastifyFetch } from './fastify-fetch'
 
-export { fromNodeHeaders, toNodeHeaders } from './headers'
+export { fromNodeHeaders, splitCookiesString, toNodeHeaders } from './headers'
 export { sameOrigin } from './same-origin'
 
 export type Fetch = typeof fetch

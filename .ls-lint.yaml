@@ -1,16 +1,12 @@
 ls:
-  .ts: kebab-case
+  .config.ts: kebab-case
   .d.ts: kebab-case
   .spec.ts: kebab-case
+  .ts: kebab-case
 
 ignore:
-  - vendor
   - coverage
-  - .circleci
-  - .eslintrc.json
   - .git
   - .github
-  - .manage_modules
-  - .vscode
   - lib
   - node_modules

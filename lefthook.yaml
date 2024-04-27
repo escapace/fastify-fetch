@@ -1,0 +1,69 @@
+assert_lefthook_installed: true
+colors: false
+source_dir: scripts/
+
+commit-msg:
+  commands:
+    'lint commit message':
+      run: pnpm exec commitlint --edit {1}
+
+pre-commit:
+  skip:
+    - merge
+    - rebase
+
+  commands:
+    knip:
+      glob: '{package.json,**/package.json,pnpm-lock.yaml}'
+      priority: 1
+      run: pnpm exec knip
+
+    ls-lint:
+      priority: 1
+      run: pnpm exec ls-lint --config '.ls-lint.yaml'
+
+    syncpack-fix-mismatches:
+      glob: '{package.json,**/package.json,pnpm-lock.yaml}'
+      priority: 2
+      run: pnpm exec syncpack fix-mismatches
+      stage_fixed: true
+
+    syncpack-set-semver-ranges:
+      glob: '{package.json,**/package.json,pnpm-lock.yaml}'
+      priority: 3
+      run: pnpm exec syncpack set-semver-ranges
+      stage_fixed: true
+
+    syncpack-format:
+      glob: '{package.json,**/package.json,pnpm-lock.yaml}'
+      priority: 4
+      run: pnpm exec syncpack format
+      stage_fixed: true
+
+    pnpm-install:
+      glob: '{package.json,**/package.json,pnpm-lock.yaml}'
+      priority: 5
+      run: pnpm install
+      stage_fixed: true
+
+    eslint:
+      exclude: '(^|/)pnpm-lock.yaml$'
+      glob: '*.{js,mjs,cjs,ts,mts,cts,yml,yaml,json}'
+      priority: 6
+      run: pnpm exec eslint --fix {staged_files}
+      stage_fixed: true
+
+    prettier:
+      exclude: '(^|/)pnpm-lock.yaml$'
+      glob: '*.{js,mjs,cjs,ts,mts,cts,yml,yaml,json,md}'
+      priority: 7
+      run: pnpm exec prettier --write {staged_files}
+      stage_fixed: true
+
+    typecheck:
+      priority: 8
+      run: pnpm run typecheck
+
+    test:
+      priority: 9
+      run: pnpm run test

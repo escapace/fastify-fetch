@@ -1,13 +1,13 @@
 name: ci
 
 on:
-  push:
+  pull_request:
     branches:
       - trunk
     paths-ignore:
       - README.md
       - LICENSE
-  pull_request:
+  push:
     branches:
       - trunk
     paths-ignore:
@@ -25,14 +25,17 @@ env:
 
 jobs:
   context:
-    uses: ./.github/workflows/workflow-call-context.yaml
+    uses: escapace/workflows/.github/workflows/context.yaml@trunk
+
   ci:
-    uses: ./.github/workflows/workflow-call-ci.yaml
     needs:
       - context
-    with:
-      ref: ${{ needs.context.outputs.ref }}
-      node-version: ${{ needs.context.outputs.node-version }}
-      pnpm-version: ${{ needs.context.outputs.pnpm-version }}
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    uses: escapace/workflows/.github/workflows/ci-typescript.yaml@trunk
+    with:
+      enable-codecov: true
+      node-version: ${{ needs.context.outputs.node-version }}
+      pnpm-version: ${{ needs.context.outputs.pnpm-version }}
+      ref: ${{ needs.context.outputs.ref }}
+      version: ${{ needs.context.outputs.version }}

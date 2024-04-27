@@ -1,19 +1,12 @@
-import * as chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import fastify from 'fastify'
 import { range, rangeRight } from 'lodash-es'
 import { URL } from 'node:url'
 import zlib from 'node:zlib'
+import { assert, describe, it, expect } from 'vitest'
 import { fastifyFetch } from './index'
 
-chai.use(chaiAsPromised)
-
-const { assert } = chai
-
 describe('./src/index.spec.ts', () => {
-  it('wrong url', async function () {
-    this.timeout(4000)
-
+  it('wrong url', { timeout: 4000 }, async function () {
     const app = fastify()
     await app.register(fastifyFetch, {
       match: (url, request) => {
@@ -21,7 +14,7 @@ describe('./src/index.spec.ts', () => {
         assert.equal(request.url, url.toString())
 
         return true
-      }
+      },
     })
 
     app.get('/hello', (_request, _response) => {
@@ -30,7 +23,7 @@ describe('./src/index.spec.ts', () => {
     })
 
     const response = await app.fetch('https://example.com:8080/world', {
-      method: 'GET'
+      method: 'GET',
     })
 
     assert.notOk(response.ok)
@@ -47,7 +40,7 @@ describe('./src/index.spec.ts', () => {
     })
 
     const response = await app.fetch('https://example.com:8080/hello', {
-      method: 'GET'
+      method: 'GET',
     })
 
     assert.ok(response.ok)
@@ -59,14 +52,11 @@ describe('./src/index.spec.ts', () => {
     await app.register(fastifyFetch)
 
     app.get('/hello', (request, response) => {
-      assert.equal(
-        request.headers.cookie,
-        'name=value; name2=value2; name=value3'
-      )
+      assert.equal(request.headers.cookie, 'name=value; name2=value2; name=value3')
 
       response.raw.setHeader('Set-Cookie', [
         'id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT',
-        'id=a3fWb; ; Domain=somecompany.co.uk; Expires=Wed, 21 Oct 2015 07:28:00 GMT'
+        'id=a3fWb; ; Domain=somecompany.co.uk; Expires=Wed, 21 Oct 2015 07:28:00 GMT',
       ])
       response.raw.writeHead(200, { 'Content-Type': 'text/plain' })
       response.raw.end('hello')
@@ -75,16 +65,16 @@ describe('./src/index.spec.ts', () => {
     const response = await app.fetch('https://example.com:8080/hello', {
       credentials: 'same-origin',
       headers: {
-        cookie: ['name=value; name2=value2; name=value3']
+        cookie: ['name=value; name2=value2; name=value3'],
       },
-      method: 'GET'
+      method: 'GET',
     })
 
     assert.ok(response.ok)
     assert.deepEqual(await response.text(), 'hello')
     assert.deepEqual(
       response.headers.get('set-cookie'),
-      'id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT, id=a3fWb; ; Domain=somecompany.co.uk; Expires=Wed, 21 Oct 2015 07:28:00 GMT'
+      'id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT, id=a3fWb; ; Domain=somecompany.co.uk; Expires=Wed, 21 Oct 2015 07:28:00 GMT',
     )
   })
 
@@ -97,12 +87,11 @@ describe('./src/index.spec.ts', () => {
       // .connection.destroy()
     })
 
-    await assert.isRejected(
+    await expect(
       app.fetch('https://example.com:8080/hello', {
-        method: 'GET'
+        method: 'GET',
       }),
-      /kaboom/i
-    )
+    ).rejects.toThrow(/kaboom/i)
   })
 
   it('returns non-chunked payload', async () => {
@@ -117,7 +106,7 @@ describe('./src/index.spec.ts', () => {
       response.raw.setHeader('x-extra', 'hello')
       response.raw.writeHead(200, {
         'Content-Length': output.length,
-        'Content-Type': 'text/plain'
+        'Content-Type': 'text/plain',
       })
 
       response.raw.end(`${request.raw.headers.host ?? ''}|${request.url}`)
@@ -128,20 +117,17 @@ describe('./src/index.spec.ts', () => {
     assert.equal(response.status, 200)
     assert.equal(response.statusText, 'Super')
     assert.deepEqual(Object.fromEntries(response.headers.entries()), {
-      connection: 'keep-alive',
+      'connection': 'keep-alive',
       'content-length': `${output.length}`,
       'content-type': 'text/plain',
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      date: `${response.headers.get('date')!}`,
-      'x-extra': 'hello'
+      // eslint-disable-next-line typescript/no-non-null-assertion
+      'date': `${response.headers.get('date')!}`,
+      'x-extra': 'hello',
     })
 
     const textDecoder = new TextDecoder()
 
-    assert.equal(
-      textDecoder.decode(await response.clone().arrayBuffer()),
-      output
-    )
+    assert.equal(textDecoder.decode(await response.clone().arrayBuffer()), output)
 
     assert.equal(await response.clone().text(), output)
   })
@@ -151,12 +137,11 @@ describe('./src/index.spec.ts', () => {
 
     await app.register(fastifyFetch)
 
-    await assert.isRejected(
+    await expect(
       app.fetch('http://example.com:8080/hello', {
-        method: 'UNKNOWN_METHOD'
+        method: 'UNKNOWN_METHOD',
       }),
-      /UNKNOWN_METHOD/
-    )
+    ).rejects.toThrow(/UNKNOWN_METHOD/)
   })
 
   it('passes host option as host header', async () => {
@@ -171,7 +156,7 @@ describe('./src/index.spec.ts', () => {
 
     const response = await app.fetch('https://example.com/hello', {
       headers: { host: 'test.example.com' },
-      method: 'GET'
+      method: 'GET',
     })
 
     assert.ok(response.ok)
@@ -187,17 +172,12 @@ describe('./src/index.spec.ts', () => {
 
     app.get('/hello', (request, response) => {
       response.raw.writeHead(200, { 'Content-Type': 'text/plain' })
-      response.raw.end(
-        `${request.raw.headers.host ?? ''}|${request.raw.url ?? ''}`
-      )
+      response.raw.end(`${request.raw.headers.host ?? ''}|${request.raw.url ?? ''}`)
     })
 
-    const response = await app.fetch(
-      new URL('https://example.com:8080/hello?test=1234'),
-      {
-        method: 'GET'
-      }
-    )
+    const response = await app.fetch(new URL('https://example.com:8080/hello?test=1234'), {
+      method: 'GET',
+    })
 
     assert.ok(response.ok)
     assert.equal(await response.text(), output)
@@ -215,15 +195,12 @@ describe('./src/index.spec.ts', () => {
       response.raw.end(request.headers.cookie)
     })
 
-    const response = await app.fetch(
-      new URL('https://example.com:8080/hello'),
-      {
-        headers: {
-          Cookie: output
-        },
-        method: 'GET'
-      }
-    )
+    const response = await app.fetch(new URL('https://example.com:8080/hello'), {
+      headers: {
+        Cookie: output,
+      },
+      method: 'GET',
+    })
 
     assert.ok(response.ok)
     assert.equal(await response.text(), output)
@@ -252,7 +229,7 @@ describe('./src/index.spec.ts', () => {
     await app.register(fastifyFetch)
 
     const response = await app.fetch(
-      'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
+      'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=',
     )
 
     assert.equal(response.status, 200)
@@ -261,7 +238,7 @@ describe('./src/index.spec.ts', () => {
 
     assert.equal(
       Buffer.from(responseBuffer).toString('base64'),
-      'R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
+      'R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=',
     )
 
     assert.instanceOf(responseBuffer, ArrayBuffer)
@@ -272,10 +249,7 @@ describe('./src/index.spec.ts', () => {
 
     await app.register(fastifyFetch)
 
-    await assert.isRejected(
-      app.fetch('gopher://example.com'),
-      /is not supported/
-    )
+    await expect(app.fetch('gopher://example.com')).rejects.toThrow(/is not supported/)
   })
 
   it('should handle no content response with gzip encoding', async () => {
@@ -359,15 +333,12 @@ describe('./src/index.spec.ts', () => {
       response.raw.end(request.headers.cookie)
     })
 
-    const response = await app.fetch(
-      new URL('https://example.com:8080/hello'),
-      {
-        headers: {
-          Cookie: output
-        },
-        method: 'GET'
-      }
-    )
+    const response = await app.fetch(new URL('https://example.com:8080/hello'), {
+      headers: {
+        Cookie: output,
+      },
+      method: 'GET',
+    })
 
     assert.ok(response.ok)
     assert.equal(await response.text(), output)
@@ -436,10 +407,7 @@ describe('./src/index.spec.ts', () => {
     rangeRight(number).forEach((index) => {
       app.get(`/${index}`, (_request, response) => {
         response.raw.statusCode = 308
-        response.raw.setHeader(
-          'Location',
-          `/${index === 1 ? 'brotli' : index - 1}`
-        )
+        response.raw.setHeader('Location', `/${index === 1 ? 'brotli' : index - 1}`)
         response.raw.end()
       })
     })
@@ -477,10 +445,7 @@ describe('./src/index.spec.ts', () => {
     rangeRight(number).forEach((index) => {
       app.get(`/${index}`, (_request, response) => {
         response.raw.statusCode = 308
-        response.raw.setHeader(
-          'Location',
-          `/${index === 1 ? 'brotli' : index - 1}`
-        )
+        response.raw.setHeader('Location', `/${index === 1 ? 'brotli' : index - 1}`)
         response.raw.end()
       })
     })
@@ -500,16 +465,13 @@ describe('./src/index.spec.ts', () => {
     rangeRight(number).forEach((index) => {
       app.get(`/${index}`, (_request, response) => {
         response.raw.statusCode = 308
-        response.raw.setHeader(
-          'Location',
-          `/${index === 1 ? 'brotli' : index - 1}`
-        )
+        response.raw.setHeader('Location', `/${index === 1 ? 'brotli' : index - 1}`)
         response.raw.end()
       })
     })
 
     const response = await app.fetch(`https://example.com/${number - 1}`, {
-      redirect: 'error'
+      redirect: 'error',
     })
 
     assert.notOk(response.ok)
@@ -525,16 +487,13 @@ describe('./src/index.spec.ts', () => {
     range(number).forEach((index) => {
       app.get(`/${index}`, (_request, response) => {
         response.raw.statusCode = 308
-        response.raw.setHeader(
-          'Location',
-          `/${index === 1 ? 'brotli' : index + 1}`
-        )
+        response.raw.setHeader('Location', `/${index === 1 ? 'brotli' : index + 1}`)
         response.raw.end()
       })
     })
 
     const response = await app.fetch(`https://example.com/0`, {
-      redirect: 'manual'
+      redirect: 'manual',
     })
 
     assert.equal(response.status, 308)

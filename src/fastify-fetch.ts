@@ -6,16 +6,9 @@ import { promisify } from 'node:util'
 import {
   brotliDecompress as _brotliDecompress,
   gunzip as _gunzip,
-  inflate as _inflate
+  inflate as _inflate,
 } from 'node:zlib'
-import {
-  type Headers,
-  Request,
-  type RequestInfo,
-  type RequestInit,
-  Response,
-  fetch
-} from 'undici'
+import { type Headers, Request, type RequestInfo, type RequestInit, Response, fetch } from 'undici'
 import symbols from 'undici/lib/web/fetch/symbols.js'
 import { fromNodeHeaders, toNodeHeaders } from './headers'
 import type { Options } from './types'
@@ -62,9 +55,7 @@ const decompressPayload = async (rawPayload: Buffer, headers: Headers) => {
     }
   }
 
-  const remainingCodings = codings
-    .filter((value): value is string => value !== undefined)
-    .reverse()
+  const remainingCodings = codings.filter((value): value is string => value !== undefined).reverse()
 
   // If one or more encodings have been applied to a representation, the sender
   // that applied the encodings MUST generate a Content-Encoding header field that
@@ -73,7 +64,7 @@ const decompressPayload = async (rawPayload: Buffer, headers: Headers) => {
     (previousValue, currentValue): Decoder =>
       async (value: Buffer) =>
         await currentValue(await previousValue(value)),
-    async (value) => await Promise.resolve(value)
+    async (value) => await Promise.resolve(value),
   )(rawPayload)
 
   if (remainingCodings.length === 0) {
@@ -92,7 +83,7 @@ const last = <T>(list: T[]): T => list[list.length - 1]
 const httpRedirectFetch = async (
   app: FastifyInstance,
   request: Request,
-  options: Options
+  options: Options,
 ): Promise<'network-error' | [LightMyRequestResponse, URL[]]> => {
   const originalURL = new URL(request.url)
   const list = [originalURL]
@@ -112,7 +103,7 @@ const httpRedirectFetch = async (
     headers,
     method,
     payload,
-    url: originalURL.toString()
+    url: originalURL.toString(),
   })
 
   if (!redirectStatus.includes(originalResponse.statusCode)) {
@@ -152,7 +143,7 @@ const httpRedirectFetch = async (
       headers,
       method,
       payload,
-      url: url.toString()
+      url: url.toString(),
     })
 
     if (!redirectStatus.includes(response.statusCode)) {
@@ -163,29 +154,23 @@ const httpRedirectFetch = async (
   return 'network-error'
 }
 
-const hasMatchFunction = (options: Options) =>
-  typeof options.match === 'function'
+const hasMatchFunction = (options: Options) => typeof options.match === 'function'
 const match = (url: URL, request: Request, options: Options) =>
   !hasMatchFunction(options) ||
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  // eslint-disable-next-line typescript/no-non-null-assertion
   (hasMatchFunction(options) && options.match!(url, request))
 
 const assertURLSupported = (url: URL) => {
   if (!supportedSchemas.has(url.protocol)) {
-    throw new TypeError(
-      `URL scheme "${url.protocol.replace(/:$/, '')}" is not supported.`
-    )
+    throw new TypeError(`URL scheme "${url.protocol.replace(/:$/, '')}" is not supported.`)
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/require-await
+// eslint-disable-next-line typescript/require-await
 export const fastifyFetch = fp<Options>(async (app, options = {}) => {
   app.decorate(
     'fetch',
-    async (
-      requestInfo: RequestInfo,
-      requestInit?: RequestInit
-    ): Promise<Response> => {
+    async (requestInfo: RequestInfo, requestInit?: RequestInit): Promise<Response> => {
       const request = new Request(requestInfo, requestInit)
 
       const url = new URL(request.url)
@@ -196,13 +181,13 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
         const data = dataUriToBuffer(request.url)
 
         return new Response(data.buffer, {
-          headers: { 'Content-Type': data.typeFull }
+          headers: { 'Content-Type': data.typeFull },
         })
       }
 
       if (
         !['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT'].includes(
-          request.method.toUpperCase()
+          request.method.toUpperCase(),
         )
       ) {
         throw new TypeError(`${request.method} is not supported.`)
@@ -231,12 +216,12 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
         const response = new Response(payload, {
           headers,
           status,
-          statusText
+          statusText,
         })
 
         if (list.length > 1) {
           // @ts-expect-error kState is not typed
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+          // eslint-disable-next-line typescript/no-unsafe-member-access, typescript/no-unsafe-call
           response[symbols.kState].urlList.push(...list)
         }
 
@@ -246,6 +231,6 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
         return await (options.fetch ?? fetch)(request)
         /* c8 ignore next */
       }
-    }
+    },
   )
 })
