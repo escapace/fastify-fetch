@@ -12,81 +12,36 @@ env:
 
 jobs:
   context:
-    uses: ./.github/workflows/workflow-call-context.yaml
+    uses: escapace/workflows/.github/workflows/context.yaml@trunk
+
   ci:
-    if: needs.context.outputs.environment == 'production'
-    uses: ./.github/workflows/workflow-call-ci.yaml
+    if: needs.context.outputs.environment == 'production' || needs.context.outputs.environment == 'staging'
     needs:
       - context
-    with:
-      ref: ${{ needs.context.outputs.ref }}
-      node-version: ${{ needs.context.outputs.node-version }}
-      pnpm-version: ${{ needs.context.outputs.pnpm-version }}
-      version: ${{ needs.context.outputs.version }}
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    uses: escapace/workflows/.github/workflows/ci-typescript.yaml@trunk
+    with:
+      enable-artifact-upload: true
+      enable-codecov: true
+      node-version: ${{ needs.context.outputs.node-version }}
+      pnpm-version: ${{ needs.context.outputs.pnpm-version }}
+      ref: ${{ needs.context.outputs.ref }}
+      version: ${{ needs.context.outputs.version }}
+
   release:
-    if: needs.context.outputs.environment == 'production'
-    runs-on: ubuntu-latest
+    if: needs.context.outputs.environment == 'production' || needs.context.outputs.environment == 'staging'
     needs:
       - context
       - ci
-    permissions:
-      id-token: write
-      packages: write
-      contents: write
-    steps:
-      - name: setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ needs.context.outputs.node-version }}
-      - name: download package
-        uses: actions/download-artifact@v4
-        with:
-          name: package
-      - name: install latest npm
-        run: |
-          npm install -g npm
-          npm --version
-      # - name: publish to github packages
-      #   run: |
-      #     cat << EOF > "$HOME/.npmrc"
-      #       //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-      #       @escapace:registry=https://npm.pkg.github.com
-      #       provenance=true
-      #       always-auth=true
-      #     EOF
-      #
-      #     npm publish --provenance --access public *.tgz
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: publish to npmjs
-        run: |
-          cat << EOF > "$HOME/.npmrc"
-            //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}
-            @escapace:registry=https://registry.npmjs.org
-            provenance=true
-            always-auth=true
-          EOF
-
-          npm publish --provenance --access public *.tgz
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.ref.outputs.value }}
-      - name: github release
-        run: |
-          echo "${{ needs.context.outputs.changelog }}" > changelog.md
-
-          if [[ "${{ needs.context.outputs.prerelease }}" == "true" ]]; then
-            gh release create v${{ needs.context.outputs.version }} \
-              --prerelease \
-              --notes-file changelog.md
-          else
-            gh release create v${{ needs.context.outputs.version }} \
-              --notes-file changelog.md
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    uses: escapace/workflows/.github/workflows/release-typescript.yaml@trunk
+    with:
+      changelog: ${{ needs.context.outputs.changelog }}
+      enable-github-packages-npm-registry: false
+      enable-npm-registry: true
+      node-version: ${{ needs.context.outputs.node-version }}
+      prerelease: ${{ fromJSON(needs.context.outputs.prerelease) }}
+      ref: ${{ needs.context.outputs.ref }}
+      version: ${{ needs.context.outputs.version }}

@@ -1,16 +1,16 @@
+comment:
+  behavior: default
+  layout: 'header, diff, tree'
+  require_changes: true
+
 coverage:
   precision: 2
   range: 70...100
   round: down
   status:
-    project: true
-    patch: true
     changes: false
-
-comment:
-  layout: 'header, diff, tree'
-  behavior: default
-  require_changes: true
+    patch: true
+    project: true
 
 ignore:
   - './coverage/tmp/'

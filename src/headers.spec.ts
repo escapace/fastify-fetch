@@ -1,6 +1,6 @@
 import { Headers } from 'undici'
 import { toNodeHeaders } from './headers'
-import { assert } from 'chai'
+import { assert, describe, it } from 'vitest'
 
 describe('toNodeHeaders', () => {
   it('should handle multiple set-cookie headers correctly', () => {
@@ -10,7 +10,7 @@ describe('toNodeHeaders', () => {
     headers.append('set-cookie', 'bar=foo')
 
     assert.deepEqual(toNodeHeaders(headers), {
-      'set-cookie': ['foo=bar', 'bar=foo']
+      'set-cookie': ['foo=bar', 'bar=foo'],
     })
   })
 
@@ -20,7 +20,7 @@ describe('toNodeHeaders', () => {
     headers.append('set-cookie', 'foo=bar')
 
     assert.deepEqual(toNodeHeaders(headers), {
-      'set-cookie': 'foo=bar'
+      'set-cookie': 'foo=bar',
     })
   })
 
@@ -30,13 +30,13 @@ describe('toNodeHeaders', () => {
     headers.append('set-cookie', 'foo=bar, bar=foo')
 
     assert.deepEqual(toNodeHeaders(headers), {
-      'set-cookie': ['foo=bar', 'bar=foo']
+      'set-cookie': ['foo=bar', 'bar=foo'],
     })
 
     headers.append('set-cookie', 'baz=qux')
 
     assert.deepEqual(toNodeHeaders(headers), {
-      'set-cookie': ['foo=bar', 'bar=foo', 'baz=qux']
+      'set-cookie': ['foo=bar', 'bar=foo', 'baz=qux'],
     })
   })
 
@@ -47,7 +47,7 @@ describe('toNodeHeaders', () => {
     headers.append('Set-Cookie', 'bar=foo')
 
     assert.deepEqual(toNodeHeaders(headers), {
-      'set-cookie': ['foo=bar', 'bar=foo']
+      'set-cookie': ['foo=bar', 'bar=foo'],
     })
   })
 })

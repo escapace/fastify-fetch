@@ -99,7 +99,7 @@ export function fromNodeHeaders(nodeHeaders: OutgoingHttpHeaders): Headers {
 export function toNodeHeaders(headers: Headers): OutgoingHttpHeaders {
   const nodeHeaders: OutgoingHttpHeaders = {}
   const cookies: string[] = []
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+  // eslint-disable-next-line typescript/strict-boolean-expressions
   if (headers) {
     for (const [key, value] of headers.entries()) {
       if (key.toLowerCase() === 'set-cookie') {

@@ -1,11 +1,3 @@
-import config from 'eslint-config-escapace'
-import tseslint from 'typescript-eslint'
+import { escapace } from 'eslint-config-escapace'
 
-export default tseslint.config({
-  languageOptions: {
-    parserOptions: {
-      project: ['./tsconfig.json'],
-      tsconfigRootDir: import.meta.dirname
-    }
-  }
-}, ...config)
+export default escapace()

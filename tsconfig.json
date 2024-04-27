@@ -1,24 +1,14 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "allowJs": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "declaration": true,
     "declarationMap": true,
     "esModuleInterop": true,
-    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": false,
-    "lib": [
-      "es2015",
-      "es2015.promise",
-      "es2016",
-      "es2017",
-      "esnext",
-      "dom",
-      "dom.iterable"
-    ],
+    "isolatedModules": true,
+    "lib": ["esnext"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
@@ -29,9 +19,9 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES2020",
+    "target": "esnext",
     "typeRoots": ["node_modules/@types"],
     "useDefineForClassFields": true
   },
-  "include": ["./src/**/*"]
+  "exclude": ["lib"]
 }
