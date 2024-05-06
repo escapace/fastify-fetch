@@ -10,7 +10,8 @@
     "src/types.ts",
     "{scripts,perf}/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"
   ],
-  "ignoreDependencies": ["@commitlint/cli", "prettier", "syncpack"],
+  "ignore": ["**/*.d.+([a-zA-Z0-9]).ts", "**/*.d.ts"],
+  "ignoreDependencies": ["@commitlint/cli", "prettier", "syncpack", "eslint-config-escapace"],
   "ignoreExportsUsedInFile": {
     "interface": true,
     "type": true
