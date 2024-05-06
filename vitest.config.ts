@@ -7,5 +7,6 @@ export default defineConfig({
       include: ['src/**'],
       provider: 'v8',
     },
+    passWithNoTests: true,
   },
 })

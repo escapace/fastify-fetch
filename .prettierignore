@@ -1,0 +1,4 @@
+# NOTE: Don't modify this file. Place .prettierignore files in relevant subdirectories.
+
+lib
+pnpm-lock.yaml

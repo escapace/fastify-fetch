@@ -16,10 +16,12 @@
     "@escapace/pnpm-pack": "0.2.0",
     "@ls-lint/ls-lint": "2.2.3",
     "@types/lodash-es": "4.17.12",
+    "@types/node": "20.12.8",
     "@vitest/coverage-v8": "1.5.2",
     "data-uri-to-buffer": "6.0.2",
     "eslint": "9.1.1",
-    "eslint-config-escapace": "5.0.5",
+    "eslint-config-escapace": "5.0.9",
+    "esroll": "0.1.0",
     "fastify": "4.26.2",
     "fastify-plugin": "4.5.1",
     "knip": "5.11.0",
@@ -28,7 +30,7 @@
     "prettier": "3.2.5",
     "prettier-config-escapace": "1.2.0",
     "syncpack": "12.3.2",
-    "tsup": "8.0.2",
+    "tsx": "4.9.1",
     "typescript": "5.4.5",
     "vitest": "1.5.2"
   },
@@ -39,16 +41,16 @@
   "exports": {
     ".": {
       "types": "./lib/types/index.d.ts",
-      "import": "./lib/esm/index.mjs"
+      "import": "./lib/node/index.js"
     }
   },
   "files": [
-    "lib/esm",
+    "lib/node",
     "lib/types"
   ],
-  "homepage": "https://github.com/escapace/fastify-fetch",
+  "homepage": "https://github.com/escapace/fastify-fetch#readme",
   "license": "MPL-2.0",
-  "module": "lib/esm/index.mjs",
+  "module": "./lib/node/index.js",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -56,7 +58,7 @@
   },
   "repository": "escapace/fastify-fetch",
   "scripts": {
-    "build": "tsup",
+    "build": "tsx scripts/build.ts",
     "lint": "ls-lint --config .ls-lint.yaml && knip && eslint",
     "pack": "pnpm-pack package --pack-destination lib",
     "prepare": "lefthook install",
@@ -65,5 +67,5 @@
   },
   "sideEffects": false,
   "type": "module",
-  "types": "lib/types/index.d.ts"
+  "types": "./lib/types/index.d.ts"
 }
