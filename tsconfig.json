@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowArbitraryExtensions": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "declaration": true,
@@ -13,6 +14,7 @@
     "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
+    "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "pretty": true,
@@ -21,7 +23,8 @@
     "strict": true,
     "target": "esnext",
     "typeRoots": ["node_modules/@types"],
-    "useDefineForClassFields": true
+    "useDefineForClassFields": true,
+    "verbatimModuleSyntax": true
   },
   "exclude": ["lib"]
 }

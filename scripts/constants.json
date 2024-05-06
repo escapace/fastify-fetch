@@ -1,0 +1,14 @@
+{
+  "builds": {
+    "node": {
+      "define": {
+        "__PLATFORM__": "\"node\""
+      },
+      "entryPoints": ["src/index.ts"],
+      "mainFields": ["module", "main"],
+      "outdir": "lib/node",
+      "platform": "node",
+      "target": ["node20.12.0"]
+    }
+  }
+}
