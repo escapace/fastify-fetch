@@ -1,8 +1,9 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": [
+    "**/*.{test,spec}.?(c|m)[jt]s?(x)",
+    "**/test/**/*.?(c|m)[jt]s?(x)",
     "eslint.config.mjs",
-    "src/**/*.spec.ts",
     "src/**/example*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,vue}",
     "src/cli.ts!",
     "src/index.ts!",
