@@ -1,5 +1,3 @@
 {
-  extends: [
-    'github>escapace/renovate-configuration'
-  ]
+  extends: ['github>escapace/renovate-configuration'],
 }
