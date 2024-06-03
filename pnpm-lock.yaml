@@ -19,8 +19,8 @@ importers:
         specifier: 19.2.2
         version: 19.2.2
       '@escapace/pnpm-pack':
-        specifier: 0.4.1
-        version: 0.4.1(@pnpm/logger@5.0.0)
+        specifier: 0.5.0
+        version: 0.5.0(@pnpm/logger@5.0.0)
       '@ls-lint/ls-lint':
         specifier: 2.2.3
         version: 2.2.3
@@ -40,8 +40,8 @@ importers:
         specifier: 9.1.1
         version: 9.1.1
       eslint-config-escapace:
-        specifier: 5.1.0
-        version: 5.1.0(eslint@9.1.1)(typescript@5.4.5)
+        specifier: 5.1.1
+        version: 5.1.1(eslint@9.1.1)(typescript@5.4.5)
       esroll:
         specifier: 0.1.1
         version: 0.1.1
@@ -330,8 +330,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@escapace/pnpm-pack@0.4.1':
-    resolution: {integrity: sha512-DEg8pvIYLuqTsttU8tWS6Aaml9/3LuYrRQrVf8AqBABXSmqCnne3+SRBQZiuEM+f1/A2GyasOMSSQFGPUhxdWQ==}
+  '@escapace/pnpm-pack@0.5.0':
+    resolution: {integrity: sha512-HKJwm33FVpj/KobQ825w3Bhf/AG8jQ/MNUuCC+PM7Ap65sbQW7ouiyIsO9nfJuDdGCW3GsA4oesiL2Fvg4d9Lg==}
     engines: {node: '>=20.12.0', pnpm: '>=9.0.6'}
     hasBin: true
 
@@ -1217,8 +1217,8 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-config-escapace@5.1.0:
-    resolution: {integrity: sha512-e3x4Z5W8h73Rm8vRuqQ44tHliPuEv/fLnuHlkSwkpSy/c5yVsoyA0YObiDMxv5MSK0gy3E/5ERA3GDLQql6jMQ==}
+  eslint-config-escapace@5.1.1:
+    resolution: {integrity: sha512-oRQBGC1FXWzN3oHvX0S+9BhHvgk9eP1mRd8Gs7s08cQnc5SynP1xxaBhmB3/fi7tr8VTrToRYA89Xp9JcbpP3A==}
     engines: {node: '>=20.12.0', pnpm: '>=9.0.6'}
     peerDependencies:
       eslint: '>=9.3.0'
@@ -3122,7 +3122,7 @@ snapshots:
   '@esbuild/win32-x64@0.20.2':
     optional: true
 
-  '@escapace/pnpm-pack@0.4.1(@pnpm/logger@5.0.0)':
+  '@escapace/pnpm-pack@0.5.0(@pnpm/logger@5.0.0)':
     dependencies:
       '@pnpm/lockfile-file': 9.0.6(@pnpm/logger@5.0.0)
       arg: 5.0.2
@@ -4089,7 +4089,7 @@ snapshots:
       eslint: 9.1.1
       semver: 7.6.2
 
-  eslint-config-escapace@5.1.0(eslint@9.1.1)(typescript@5.4.5):
+  eslint-config-escapace@5.1.1(eslint@9.1.1)(typescript@5.4.5):
     dependencies:
       '@stylistic/eslint-plugin': 2.1.0(eslint@9.1.1)(typescript@5.4.5)
       eslint: 9.1.1
