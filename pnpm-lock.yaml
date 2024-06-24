@@ -40,8 +40,8 @@ importers:
         specifier: 9.1.1
         version: 9.1.1
       eslint-config-escapace:
-        specifier: 5.1.1
-        version: 5.1.1(eslint@9.1.1)(typescript@5.4.5)
+        specifier: 5.1.2
+        version: 5.1.2(eslint@9.1.1)(typescript@5.4.5)
       esroll:
         specifier: 0.1.1
         version: 0.1.1
@@ -552,11 +552,11 @@ packages:
     os: [darwin, linux, win32]
     hasBin: true
 
-  '@microsoft/tsdoc-config@0.16.2':
-    resolution: {integrity: sha512-OGiIzzoBLgWWR0UdRJX98oYO+XKGf7tiK4Zk6tQ/E4IJqGCe7dvkTvgDZV5cFJUzLGDOjeAXrnZoA6QkVySuxw==}
+  '@microsoft/tsdoc-config@0.17.0':
+    resolution: {integrity: sha512-v/EYRXnCAIHxOHW+Plb6OWuUoMotxTN0GLatnpOb1xq0KuTNw/WI3pamJx/UbsoJP5k9MCw1QxvvhPcF9pH3Zg==}
 
-  '@microsoft/tsdoc@0.14.2':
-    resolution: {integrity: sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==}
+  '@microsoft/tsdoc@0.15.0':
+    resolution: {integrity: sha512-HZpPoABogPvjeJOdzCOSJsXeL/SMCBgBZMVC3X3d7YYp2gf31MfxhUoYUNwf1ERPJOnQc0wkFn9trqI6ZEdZuA==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1001,6 +1001,9 @@ packages:
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
 
+  ajv@8.12.0:
+    resolution: {integrity: sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA==}
+
   ajv@8.16.0:
     resolution: {integrity: sha512-F0twR8U1ZU67JIEtekUcLkXkoO5mMMmgGD8sK/xUFzJ805jxHQl92hImFAqqXMyMYjSPOyUPAwHYhB72g5sTXw==}
 
@@ -1362,11 +1365,11 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-config-escapace@5.1.1:
-    resolution: {integrity: sha512-oRQBGC1FXWzN3oHvX0S+9BhHvgk9eP1mRd8Gs7s08cQnc5SynP1xxaBhmB3/fi7tr8VTrToRYA89Xp9JcbpP3A==}
+  eslint-config-escapace@5.1.2:
+    resolution: {integrity: sha512-QbAK5DOlYfmP0vC0DRBLpRj6yxmr40NgU3gwPbDTyCSNQ2bDfJC+mScmtVfAOHV/jMPBcb2VDUm9zehxGk/jug==}
     engines: {node: '>=20.12.0', pnpm: '>=9.0.6'}
     peerDependencies:
-      eslint: '>=9.3.0'
+      eslint: '>=9.5.0'
 
   eslint-config-flat-gitignore@0.1.5:
     resolution: {integrity: sha512-hEZLwuZjDBGDERA49c2q7vxc8sCGv8EdBp6PQYzGOMcHIgrfG9YOM6s/4jx24zhD+wnK9AI8mgN5RxSss5nClQ==}
@@ -1401,11 +1404,11 @@ packages:
     peerDependencies:
       eslint: '>=8.44.0'
 
-  eslint-plugin-tsdoc@0.2.17:
-    resolution: {integrity: sha512-xRmVi7Zx44lOBuYqG8vzTXuL6IdGOeF9nHX17bjJ8+VE6fsxpdGem0/SBTmAwgYMKYB1WBkqRJVQ+n8GK041pA==}
+  eslint-plugin-tsdoc@0.3.0:
+    resolution: {integrity: sha512-0MuFdBrrJVBjT/gyhkP2BqpD0np1NxNLfQ38xXDlSs/KVVpKI2A6vN7jx2Rve/CyUsvOsMGwp9KKrinv7q9g3A==}
 
-  eslint-plugin-unicorn@53.0.0:
-    resolution: {integrity: sha512-kuTcNo9IwwUCfyHGwQFOK/HjJAYzbODHN3wP0PgqbW+jbXqpNWxNVpVhj2tO9SixBwuAdmal8rVcWKBxwFnGuw==}
+  eslint-plugin-unicorn@54.0.0:
+    resolution: {integrity: sha512-XxYLRiYtAWiAjPv6z4JREby1TAE2byBC7wlh0V4vWDCpccOSU1KovWV//jqPXF6bq3WKxqX9rdjoRQ1EhdmNdQ==}
     engines: {node: '>=18.18'}
     peerDependencies:
       eslint: '>=8.56.0'
@@ -2473,9 +2476,6 @@ packages:
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
 
-  resolve@1.19.0:
-    resolution: {integrity: sha512-rArEXAgsBG4UgRGcynxWIWKFvh/XZCcS8UJdHhwy91zwAvCZIbcs+vAbflgBnNjYMs/i/i+/Ux6IZhML1yPvxg==}
-
   resolve@1.22.8:
     resolution: {integrity: sha512-oKWePCxqpd6FlLvGV1VU0x7bkPmmCNolxzjMf4NczoDnQcIWrAF+cPtZn5i6n+RfD2d9i0tzpKnG6Yk168yIyw==}
     hasBin: true
@@ -3433,14 +3433,14 @@ snapshots:
 
   '@ls-lint/ls-lint@2.2.3': {}
 
-  '@microsoft/tsdoc-config@0.16.2':
+  '@microsoft/tsdoc-config@0.17.0':
     dependencies:
-      '@microsoft/tsdoc': 0.14.2
-      ajv: 6.12.6
+      '@microsoft/tsdoc': 0.15.0
+      ajv: 8.12.0
       jju: 1.4.0
-      resolve: 1.19.0
+      resolve: 1.22.8
 
-  '@microsoft/tsdoc@0.14.2': {}
+  '@microsoft/tsdoc@0.15.0': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -3976,6 +3976,13 @@ snapshots:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
 
+  ajv@8.12.0:
+    dependencies:
+      fast-deep-equal: 3.1.3
+      json-schema-traverse: 1.0.0
+      require-from-string: 2.0.2
+      uri-js: 4.4.1
+
   ajv@8.16.0:
     dependencies:
       fast-deep-equal: 3.1.3
@@ -4335,7 +4342,7 @@ snapshots:
       eslint: 9.1.1
       semver: 7.6.2
 
-  eslint-config-escapace@5.1.1(eslint@9.1.1)(typescript@5.4.5):
+  eslint-config-escapace@5.1.2(eslint@9.1.1)(typescript@5.4.5):
     dependencies:
       '@stylistic/eslint-plugin': 2.2.0(eslint@9.1.1)(typescript@5.4.5)
       eslint: 9.1.1
@@ -4343,8 +4350,8 @@ snapshots:
       eslint-plugin-jsonc: 2.16.0(eslint@9.1.1)
       eslint-plugin-perfectionist: 2.11.0(eslint@9.1.1)(typescript@5.4.5)(vue-eslint-parser@9.4.3(eslint@9.1.1))
       eslint-plugin-regexp: 2.6.0(eslint@9.1.1)
-      eslint-plugin-tsdoc: 0.2.17
-      eslint-plugin-unicorn: 53.0.0(eslint@9.1.1)
+      eslint-plugin-tsdoc: 0.3.0
+      eslint-plugin-unicorn: 54.0.0(eslint@9.1.1)
       eslint-plugin-vue: 9.26.0(eslint@9.1.1)
       eslint-plugin-vuejs-accessibility: 2.3.0(eslint@9.1.1)
       eslint-plugin-yml: 1.14.0(eslint@9.1.1)
@@ -4398,12 +4405,12 @@ snapshots:
       regexp-ast-analysis: 0.7.1
       scslre: 0.3.0
 
-  eslint-plugin-tsdoc@0.2.17:
+  eslint-plugin-tsdoc@0.3.0:
     dependencies:
-      '@microsoft/tsdoc': 0.14.2
-      '@microsoft/tsdoc-config': 0.16.2
+      '@microsoft/tsdoc': 0.15.0
+      '@microsoft/tsdoc-config': 0.17.0
 
-  eslint-plugin-unicorn@53.0.0(eslint@9.1.1):
+  eslint-plugin-unicorn@54.0.0(eslint@9.1.1):
     dependencies:
       '@babel/helper-validator-identifier': 7.24.7
       '@eslint-community/eslint-utils': 4.4.0(eslint@9.1.1)
@@ -5485,11 +5492,6 @@ snapshots:
   resolve-from@5.0.0: {}
 
   resolve-pkg-maps@1.0.0: {}
-
-  resolve@1.19.0:
-    dependencies:
-      is-core-module: 2.13.1
-      path-parse: 1.0.7
 
   resolve@1.22.8:
     dependencies:
