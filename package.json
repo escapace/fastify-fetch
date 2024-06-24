@@ -20,7 +20,7 @@
     "@vitest/coverage-v8": "1.5.2",
     "data-uri-to-buffer": "6.0.2",
     "eslint": "9.1.1",
-    "eslint-config-escapace": "5.1.1",
+    "eslint-config-escapace": "5.1.2",
     "esroll": "0.1.1",
     "fastify": "4.26.2",
     "fastify-plugin": "4.5.1",
