@@ -29,7 +29,7 @@ jobs:
       ref: ${{ needs.context.outputs.ref }}
       version: ${{ needs.context.outputs.version }}
 
-  release:
+  release-typescript:
     if: needs.context.outputs.environment == 'production' || needs.context.outputs.environment == 'staging'
     needs:
       - context
@@ -38,10 +38,18 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     uses: escapace/workflows/.github/workflows/release-typescript.yaml@trunk
     with:
-      changelog: ${{ needs.context.outputs.changelog }}
       enable-github-packages-npm-registry: false
       enable-npm-registry: true
       node-version: ${{ needs.context.outputs.node-version }}
+
+  release-github:
+    if: needs.context.outputs.environment == 'production' || needs.context.outputs.environment == 'staging'
+    needs:
+      - context
+      - ci
+      - release-typescript
+    uses: escapace/workflows/.github/workflows/release-github.yaml@trunk
+    with:
+      changelog: ${{ needs.context.outputs.changelog }}
       prerelease: ${{ fromJSON(needs.context.outputs.prerelease) }}
-      ref: ${{ needs.context.outputs.ref }}
       version: ${{ needs.context.outputs.version }}

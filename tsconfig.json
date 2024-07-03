@@ -26,5 +26,6 @@
     "useDefineForClassFields": true,
     "verbatimModuleSyntax": true
   },
-  "exclude": ["lib"]
+  "exclude": ["lib"],
+  "include": ["*.ts", "scripts", "src"]
 }

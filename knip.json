@@ -11,6 +11,7 @@
     "{scripts,perf}/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"
   ],
   "ignore": ["**/*.d.+([a-zA-Z0-9]).ts", "**/*.d.ts", "lib/**"],
+  "ignoreBinaries": ["ncu"],
   "ignoreDependencies": [
     "@commitlint/cli",
     "@microsoft/api-extractor",
