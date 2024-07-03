@@ -1,13 +1,20 @@
 ls:
+  .browser.spec.ts: kebab-case
+  .config.browser.ts: kebab-case
+  .config.neutral.ts: kebab-case
+  .config.node.ts: kebab-case
   .config.ts: kebab-case
   .d.json.ts: kebab-case
   .d.ts: kebab-case
+  .node.spec.ts: kebab-case
   .spec.ts: kebab-case
   .ts: kebab-case
+  .workspace.ts: kebab-case
 
 ignore:
-  - coverage
   - .git
   - .github
+  - coverage
   - lib
   - node_modules
+  - packages

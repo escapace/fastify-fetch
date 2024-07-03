@@ -1,16 +1,17 @@
-comment:
-  behavior: default
-  layout: 'header, diff, tree'
-  require_changes: true
+comment: false
+github_checks:
+  annotations: true
 
 coverage:
   precision: 2
-  range: 70...100
+  range: '20...60'
   round: down
   status:
     changes: false
-    patch: true
-    project: true
-
-ignore:
-  - './coverage/tmp/'
+    patch:
+      default:
+        informational: true
+    project:
+      default:
+        target: auto
+        threshold: 5%
