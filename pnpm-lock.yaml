@@ -40,8 +40,8 @@ importers:
         specifier: 9.6.0
         version: 9.6.0
       eslint-config-escapace:
-        specifier: 5.2.0
-        version: 5.2.0(eslint@9.6.0)(typescript@5.5.3)
+        specifier: 5.2.1
+        version: 5.2.1(eslint@9.6.0)(typescript@5.5.3)
       esroll:
         specifier: 0.2.0
         version: 0.2.0
@@ -488,6 +488,10 @@ packages:
   '@eslint-community/regexpp@4.11.1':
     resolution: {integrity: sha512-m4DVN9ZqskZoLU5GlWZadwDnYo3vAEydiUayB9widCl9ffWx2IvPnp6n3on5rJmziJSw9Bv+Z3ChDVdMwXCY8Q==}
     engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
+
+  '@eslint/compat@1.1.1':
+    resolution: {integrity: sha512-lpHyRyplhGPL5mGEh6M9O5nnKk0Gz4bFI+Zu6tKlPpDUN7XshWvH9C/px4UVm87IAANE0W81CEsNGbS1KlzXpA==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/config-array@0.17.1':
     resolution: {integrity: sha512-BlYOpej8AQ8Ev9xVqroV7a02JK3SkBAaN9GfMMH9W6Ch8FlQlkjGw4Ir7+FgYwfirivAf4t+GtzuAxqfukmISA==}
@@ -1330,14 +1334,16 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-config-escapace@5.2.0:
-    resolution: {integrity: sha512-/jDzd+Ei4RWV5/mZnwQQIfq5tg+zyKwYny/YhOyJ8MEseyYjw9sjhySyHJ/s/OQ/9BC5mzO2W+ffAVSbvUddBA==}
+  eslint-config-escapace@5.2.1:
+    resolution: {integrity: sha512-Uw61vw/VWnTo8HWfRg+HapqDXjt/M7kGIhIuutP45U8CkQTEjw52n2V1B0tCzQvjdHsXWREgMjSJNtd2TlW0Ww==}
     engines: {node: '>=20.15.0', pnpm: '>=9.4.0'}
     peerDependencies:
-      eslint: '>=9.9.0'
+      eslint: '>=9.10.0'
 
-  eslint-config-flat-gitignore@0.1.8:
-    resolution: {integrity: sha512-OEUbS2wzzYtUfshjOqzFo4Bl4lHykXUdM08TCnYNl7ki+niW4Q1R0j0FDFDr0vjVsI5ZFOz5LvluxOP+Ew+dYw==}
+  eslint-config-flat-gitignore@0.3.0:
+    resolution: {integrity: sha512-0Ndxo4qGhcewjTzw52TK06Mc00aDtHNTdeeW2JfONgDcLkRO/n/BteMRzNVpLQYxdCC/dFEilfM9fjjpGIJ9Og==}
+    peerDependencies:
+      eslint: ^9.5.0
 
   eslint-plugin-jsonc@2.16.0:
     resolution: {integrity: sha512-Af/ZL5mgfb8FFNleH6KlO4/VdmDuTqmM+SPnWcdoWywTetv7kq+vQe99UyQb9XO3b0OWLVuTH7H0d/PXYCMdSg==}
@@ -2268,10 +2274,6 @@ packages:
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
-
-  parse-gitignore@2.0.0:
-    resolution: {integrity: sha512-RmVuCHWsfu0QPNW+mraxh/xjQVw/lhUCUru8Zni3Ctq3AoMhpDTq0OVdKS6iesd6Kqb7viCV3isAL43dciOSog==}
-    engines: {node: '>=14'}
 
   parse-json@5.2.0:
     resolution: {integrity: sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg==}
@@ -3376,6 +3378,8 @@ snapshots:
 
   '@eslint-community/regexpp@4.11.1': {}
 
+  '@eslint/compat@1.1.1': {}
+
   '@eslint/config-array@0.17.1':
     dependencies:
       '@eslint/object-schema': 2.1.4
@@ -4300,11 +4304,11 @@ snapshots:
       eslint: 9.6.0
       semver: 7.6.3
 
-  eslint-config-escapace@5.2.0(eslint@9.6.0)(typescript@5.5.3):
+  eslint-config-escapace@5.2.1(eslint@9.6.0)(typescript@5.5.3):
     dependencies:
       '@stylistic/eslint-plugin': 2.8.0(eslint@9.6.0)(typescript@5.5.3)
       eslint: 9.6.0
-      eslint-config-flat-gitignore: 0.1.8
+      eslint-config-flat-gitignore: 0.3.0(eslint@9.6.0)
       eslint-plugin-jsonc: 2.16.0(eslint@9.6.0)
       eslint-plugin-perfectionist: 3.6.0(eslint@9.6.0)(typescript@5.5.3)(vue-eslint-parser@9.4.3(eslint@9.6.0))
       eslint-plugin-regexp: 2.6.0(eslint@9.6.0)
@@ -4326,10 +4330,11 @@ snapshots:
       - svelte-eslint-parser
       - typescript
 
-  eslint-config-flat-gitignore@0.1.8:
+  eslint-config-flat-gitignore@0.3.0(eslint@9.6.0):
     dependencies:
+      '@eslint/compat': 1.1.1
+      eslint: 9.6.0
       find-up-simple: 1.0.0
-      parse-gitignore: 2.0.0
 
   eslint-plugin-jsonc@2.16.0(eslint@9.6.0):
     dependencies:
@@ -5304,8 +5309,6 @@ snapshots:
   parent-module@1.0.1:
     dependencies:
       callsites: 3.1.0
-
-  parse-gitignore@2.0.0: {}
 
   parse-json@5.2.0:
     dependencies:
