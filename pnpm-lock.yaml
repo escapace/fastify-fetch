@@ -40,8 +40,8 @@ importers:
         specifier: 9.6.0
         version: 9.6.0
       eslint-config-escapace:
-        specifier: 5.2.2
-        version: 5.2.2(eslint@9.6.0)(typescript@5.5.3)
+        specifier: 5.2.3
+        version: 5.2.3(eslint@9.6.0)(typescript@5.5.3)
       esroll:
         specifier: 0.2.0
         version: 0.2.0
@@ -1321,11 +1321,11 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-config-escapace@5.2.2:
-    resolution: {integrity: sha512-cNMlX13wWvU/tlPABc0zpdRVKlDzMFaTCPDTMo+vunWykRKwLACYD19sTc89l4oFPhv9IGzNJqvgYS895WCdsA==}
+  eslint-config-escapace@5.2.3:
+    resolution: {integrity: sha512-dPTJXpKsrPjcbfFkVcmb/kIfJI6zNBOSnxiofzlGefifnl5M99Mk2mbVkcMVLzViAbPOuoV78LWNc1z27THHtw==}
     engines: {node: '>=20.15.0', pnpm: '>=9.4.0'}
     peerDependencies:
-      eslint: '>=9.11.0'
+      eslint: '>=9.13.0'
 
   eslint-config-flat-gitignore@0.3.0:
     resolution: {integrity: sha512-0Ndxo4qGhcewjTzw52TK06Mc00aDtHNTdeeW2JfONgDcLkRO/n/BteMRzNVpLQYxdCC/dFEilfM9fjjpGIJ9Og==}
@@ -1372,8 +1372,8 @@ packages:
   eslint-plugin-tsdoc@0.3.0:
     resolution: {integrity: sha512-0MuFdBrrJVBjT/gyhkP2BqpD0np1NxNLfQ38xXDlSs/KVVpKI2A6vN7jx2Rve/CyUsvOsMGwp9KKrinv7q9g3A==}
 
-  eslint-plugin-unicorn@55.0.0:
-    resolution: {integrity: sha512-n3AKiVpY2/uDcGrS3+QsYDkjPfaOrNrsfQxU9nt5nitd9KuvVXrfAvgCO9DYPSfap+Gqjw9EOrXIsBp5tlHZjA==}
+  eslint-plugin-unicorn@56.0.0:
+    resolution: {integrity: sha512-aXpddVz/PQMmd69uxO98PA4iidiVNvA0xOtbpUoz1WhBd4RxOQQYqN618v68drY0hmy5uU2jy1bheKEVWBjlPw==}
     engines: {node: '>=18.18'}
     peerDependencies:
       eslint: '>=8.56.0'
@@ -4242,7 +4242,7 @@ snapshots:
       eslint: 9.6.0
       semver: 7.6.3
 
-  eslint-config-escapace@5.2.2(eslint@9.6.0)(typescript@5.5.3):
+  eslint-config-escapace@5.2.3(eslint@9.6.0)(typescript@5.5.3):
     dependencies:
       '@stylistic/eslint-plugin': 2.9.0(eslint@9.6.0)(typescript@5.5.3)
       eslint: 9.6.0
@@ -4252,7 +4252,7 @@ snapshots:
       eslint-plugin-regexp: 2.6.0(eslint@9.6.0)
       eslint-plugin-toml: 0.11.1(eslint@9.6.0)
       eslint-plugin-tsdoc: 0.3.0
-      eslint-plugin-unicorn: 55.0.0(eslint@9.6.0)
+      eslint-plugin-unicorn: 56.0.0(eslint@9.6.0)
       eslint-plugin-vue: 9.29.1(eslint@9.6.0)
       eslint-plugin-vuejs-accessibility: 2.4.1(eslint@9.6.0)
       eslint-plugin-yml: 1.14.0(eslint@9.6.0)
@@ -4324,7 +4324,7 @@ snapshots:
       '@microsoft/tsdoc': 0.15.0
       '@microsoft/tsdoc-config': 0.17.0
 
-  eslint-plugin-unicorn@55.0.0(eslint@9.6.0):
+  eslint-plugin-unicorn@56.0.0(eslint@9.6.0):
     dependencies:
       '@babel/helper-validator-identifier': 7.25.9
       '@eslint-community/eslint-utils': 4.4.1(eslint@9.6.0)
