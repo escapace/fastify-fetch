@@ -21,7 +21,7 @@ pre-commit:
     knip:
       glob: '{package.json,**/package.json,pnpm-lock.yaml}'
       priority: 1
-      run: pnpm exec knip
+      run: pnpm exec knip --no-config-hints
 
     ls-lint:
       priority: 1
@@ -40,14 +40,14 @@ pre-commit:
       stage_fixed: true
 
     eslint:
-      exclude: '^[\/]*(pnpm-lock\.yaml|lib)$'
-      glob: '*.{js,mjs,cjs,ts,mts,cts,yml,yaml,json}'
+      exclude: '(^|/)(pnpm-lock\.yaml)$'
+      glob: '*.{js,mjs,cjs,ts,mts,cts,yml,yaml,json,toml}'
       priority: 4
       run: pnpm exec eslint --no-warn-ignored --fix {staged_files}
       stage_fixed: true
 
     prettier:
-      exclude: '^[\/]*(pnpm-lock\.yaml|lib)$'
+      exclude: '(^|/)(pnpm-lock\.yaml)$'
       glob: '*.{js,mjs,cjs,ts,mts,cts,yml,yaml,json,md}'
       priority: 5
       run: pnpm exec prettier --write {staged_files}

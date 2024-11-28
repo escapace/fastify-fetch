@@ -6,11 +6,7 @@ export function sameOrigin(A: URL, B: URL) {
 
   // 2. If A and B are both tuple origins and their schemes,
   //    hosts, and port are identical, then return true.
-  if (
-    A.protocol === B.protocol &&
-    A.hostname === B.hostname &&
-    A.port === B.port
-  ) {
+  if (A.protocol === B.protocol && A.hostname === B.hostname && A.port === B.port) {
     return true
   }
 

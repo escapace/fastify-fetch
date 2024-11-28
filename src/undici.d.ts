@@ -1,5 +1,5 @@
-declare module 'undici/lib/web/fetch/symbols.js' {
-  declare const State: Record<string, Symbol>
+declare module 'undici/lib/web/fetch/response.js' {
+  import type { Response } from 'undici'
 
-  export = State
+  export declare const getResponseState: (response: Response) => { urlList: URL[] }
 }

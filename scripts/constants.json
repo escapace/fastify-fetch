@@ -2,6 +2,7 @@
   "builds": {
     "node": {
       "define": {
+        "__ENVIRONMENT__": "\"production\"",
         "__PLATFORM__": "\"node\""
       },
       "entryPoints": ["src/index.ts"],

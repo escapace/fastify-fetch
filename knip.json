@@ -1,14 +1,14 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": [
+    "{scripts,perf}/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}",
     "**/*.{test,spec}.?(c|m)[jt]s?(x)",
     "**/test/**/*.?(c|m)[jt]s?(x)",
     "eslint.config.mjs",
     "src/**/example*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,vue}",
     "src/cli.ts!",
     "src/index.ts!",
-    "src/types.ts",
-    "{scripts,perf}/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"
+    "src/types.ts"
   ],
   "ignore": ["**/*.d.+([a-zA-Z0-9]).ts", "**/*.d.ts", "lib/**"],
   "ignoreBinaries": ["ncu"],
@@ -25,5 +25,6 @@
   },
   "lefthook": {
     "config": []
-  }
+  },
+  "project": ["**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,vue}"]
 }

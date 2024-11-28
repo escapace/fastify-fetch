@@ -65,7 +65,7 @@ describe('./src/index.spec.ts', () => {
     const response = await app.fetch('https://example.com:8080/hello', {
       credentials: 'same-origin',
       headers: {
-        cookie: ['name=value; name2=value2; name=value3'],
+        cookie: 'name=value; name2=value2; name=value3',
       },
       method: 'GET',
     })

@@ -3,7 +3,7 @@ import fastifyFetch from './index'
 
 const example = async () => {
   const app = fastify({
-    logger: true
+    logger: true,
   })
 
   await app.register(fastifyFetch)

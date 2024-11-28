@@ -8,8 +8,8 @@ import {
   gunzip as _gunzip,
   inflate as _inflate,
 } from 'node:zlib'
-import { type Headers, Request, type RequestInfo, type RequestInit, Response, fetch } from 'undici'
-import symbols from 'undici/lib/web/fetch/symbols.js'
+import { fetch, type Headers, Request, type RequestInfo, type RequestInit, Response } from 'undici'
+import { getResponseState } from 'undici/lib/web/fetch/response.js'
 import { fromNodeHeaders, toNodeHeaders } from './headers'
 import type { Options } from './types'
 
@@ -220,9 +220,8 @@ export const fastifyFetch = fp<Options>(async (app, options = {}) => {
         })
 
         if (list.length > 1) {
-          // @ts-expect-error kState is not typed
-          // eslint-disable-next-line typescript/no-unsafe-member-access, typescript/no-unsafe-call
-          response[symbols.kState].urlList.push(...list)
+          const responseState = getResponseState(response)
+          responseState.urlList.push(...list)
         }
 
         return response
