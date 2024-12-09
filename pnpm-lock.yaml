@@ -19,8 +19,8 @@ importers:
         specifier: 19.6.0
         version: 19.6.0
       '@escapace/pnpm-pack':
-        specifier: 0.5.2
-        version: 0.5.2(@pnpm/logger@5.2.0)
+        specifier: 0.5.3
+        version: 0.5.3(@pnpm/logger@5.2.0)
       '@ls-lint/ls-lint':
         specifier: 2.2.3
         version: 2.2.3
@@ -471,9 +471,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@escapace/pnpm-pack@0.5.2':
-    resolution: {integrity: sha512-i171vGV8ff0c3JQ/aTLqVbNQSMlSrSQPZjZSPOjRnah3kQ8oz//rxcOY+Hg1RlIMbyyythSbCDdsz7iNHhWfPA==}
-    engines: {node: '>=20.12.0', pnpm: '>=9.0.6'}
+  '@escapace/pnpm-pack@0.5.3':
+    resolution: {integrity: sha512-F0TkhgFACyGHmGwcmvQU0eUwuXzoHSVQo3Zj053ZGxk23LM0h8NxpeNxBhkmAfK4EFLAVFIMy6Joyge2yen1PA==}
+    engines: {node: '>=20.15.0', pnpm: '>=9.4.0'}
     hasBin: true
 
   '@eslint-community/eslint-utils@4.4.1':
@@ -2839,9 +2839,9 @@ packages:
     engines: {node: '>= 8'}
     hasBin: true
 
-  which@4.0.0:
-    resolution: {integrity: sha512-GlaYyEb07DPxYCKhKzplCWBJtvxZcZMrL+4UkrTSJHHPyZU4mYYTv3qaOe77H7EODLSSopAUFAc6W8U4yqvscg==}
-    engines: {node: ^16.13.0 || >=18.0.0}
+  which@5.0.0:
+    resolution: {integrity: sha512-JEdGzHwwkrbWoGOlIHqQ5gtprKGOenpDHpxE9zVR1bWbOtYRyPPHMe9FaP6x61CmNaTThSkb0DAJte5jD+DmzQ==}
+    engines: {node: ^18.17.0 || >=20.5.0}
     hasBin: true
 
   why-is-node-running@2.3.0:
@@ -3206,7 +3206,7 @@ snapshots:
   '@esbuild/win32-x64@0.24.0':
     optional: true
 
-  '@escapace/pnpm-pack@0.5.2(@pnpm/logger@5.2.0)':
+  '@escapace/pnpm-pack@0.5.3(@pnpm/logger@5.2.0)':
     dependencies:
       '@pnpm/lockfile-file': 9.1.3(@pnpm/logger@5.2.0)
       arg: 5.0.2
@@ -3215,7 +3215,7 @@ snapshots:
       fs-extra: 11.2.0
       lodash-es: 4.17.21
       semver: 7.6.3
-      which: 4.0.0
+      which: 5.0.0
     transitivePeerDependencies:
       - '@pnpm/logger'
       - domexception
@@ -5679,7 +5679,7 @@ snapshots:
     dependencies:
       isexe: 2.0.0
 
-  which@4.0.0:
+  which@5.0.0:
     dependencies:
       isexe: 3.1.1
 
