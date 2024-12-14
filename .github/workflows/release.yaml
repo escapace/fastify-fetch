@@ -14,7 +14,7 @@ jobs:
   context:
     uses: escapace/workflows/.github/workflows/context.yaml@trunk
 
-  ci:
+  ci-typescript:
     if: needs.context.outputs.environment == 'production' || needs.context.outputs.environment == 'staging'
     needs:
       - context
@@ -23,7 +23,7 @@ jobs:
     uses: escapace/workflows/.github/workflows/ci-typescript.yaml@trunk
     with:
       enable-artifact-upload: true
-      enable-codecov: true
+      enable-codecov: ${{ !github.event.repository.private }}
       node-version: ${{ needs.context.outputs.node-version }}
       pnpm-version: ${{ needs.context.outputs.pnpm-version }}
       ref: ${{ needs.context.outputs.ref }}
@@ -33,20 +33,18 @@ jobs:
     if: needs.context.outputs.environment == 'production' || needs.context.outputs.environment == 'staging'
     needs:
       - context
-      - ci
+      - ci-typescript
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     uses: escapace/workflows/.github/workflows/release-typescript.yaml@trunk
     with:
-      enable-github-packages-npm-registry: false
-      enable-npm-registry: true
       node-version: ${{ needs.context.outputs.node-version }}
 
   release-github:
     if: needs.context.outputs.environment == 'production' || needs.context.outputs.environment == 'staging'
     needs:
       - context
-      - ci
+      - ci-typescript
       - release-typescript
     uses: escapace/workflows/.github/workflows/release-github.yaml@trunk
     with:

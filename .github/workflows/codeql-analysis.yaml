@@ -1,12 +1,6 @@
-name: ci
+name: codeql-analysis
 
 on:
-  pull_request:
-    branches:
-      - trunk
-    paths-ignore:
-      - README.md
-      - LICENSE
   push:
     branches:
       - trunk
@@ -18,23 +12,22 @@ permissions:
   contents: read
   packages: read
 
-env:
-  # 7 GiB by default on GitHub, setting to 6 GiB
-  # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
-  NODE_OPTIONS: --max-old-space-size=6144
-
 jobs:
   context:
     uses: escapace/workflows/.github/workflows/context.yaml@trunk
 
-  ci-typescript:
+  codeql-analysis:
     needs:
       - context
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    permissions:
+      actions: read
+      contents: read
+      packages: read
+      security-events: write
     uses: escapace/workflows/.github/workflows/ci-typescript.yaml@trunk
     with:
-      enable-codecov: ${{ !github.event.repository.private }}
+      enable-codeql: true
+      enable-test: false
       node-version: ${{ needs.context.outputs.node-version }}
       pnpm-version: ${{ needs.context.outputs.pnpm-version }}
       ref: ${{ needs.context.outputs.ref }}

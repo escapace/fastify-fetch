@@ -3,9 +3,10 @@ name: dependency-review
 on:
   - pull_request
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
-  context:
+  dependency-review:
+    permissions:
+      contents: read
     uses: escapace/workflows/.github/workflows/dependency-review.yaml@trunk

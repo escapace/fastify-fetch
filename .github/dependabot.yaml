@@ -2,6 +2,11 @@ version: 2
 
 updates:
   - directory: '/'
+    groups:
+      actions:
+        update-types:
+          - 'minor'
+          - 'patch'
     labels:
       - 'dependencies'
       - 'github-actions'

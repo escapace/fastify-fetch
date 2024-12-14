@@ -1,6 +1,3 @@
-# NOTE: Don't modify this file. Place .prettierignore files in relevant subdirectories.
-
+coverage
 lib
 pnpm-lock.yaml
-
-coverage
