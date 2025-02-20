@@ -53,7 +53,8 @@
   "module": "./lib/node/index.js",
   "pnpm": {
     "onlyBuiltDependencies": [
-      "lefthook"
+      "lefthook",
+      "esbuild"
     ]
   },
   "private": false,
