@@ -21,7 +21,7 @@
     "data-uri-to-buffer": "6.0.2",
     "eslint": "9.20.1",
     "eslint-config-escapace": "5.5.2",
-    "esroll": "0.4.2",
+    "esroll": "0.4.3",
     "fastify": "5.2.1",
     "fastify-plugin": "5.0.1",
     "knip": "5.44.4",
