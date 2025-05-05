@@ -43,8 +43,8 @@ importers:
         specifier: 5.5.2
         version: 5.5.2(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3)
       esroll:
-        specifier: 0.4.2
-        version: 0.4.2
+        specifier: 0.4.3
+        version: 0.4.3
       fastify:
         specifier: 5.2.1
         version: 5.2.1
@@ -1345,8 +1345,8 @@ packages:
     resolution: {integrity: sha512-KmfKL3b6G+RXvP8N1vr3Tq1kL/oCFgn2NYXEtqP8/L3pKapUA4G8cFVaoF3SU323CD4XypR/ffioHmkti6/Tag==}
     engines: {node: '>=4.0'}
 
-  esroll@0.4.2:
-    resolution: {integrity: sha512-Vk4cnsbWgy6DRVxmXXHP+iv3ZuScDPMDurEiS7biFj9HBPcU5pCXXjGd8/75Mjp56RbrUef/U6onYgTvRWX42w==}
+  esroll@0.4.3:
+    resolution: {integrity: sha512-6zb66Tq25cDCTCxZvwSEPXsQydhdWaWvpVqUu5g9EUvlz+XuN8ZwhCfO7iJMvexvn09rtSKd9s4XuJMCem0JQg==}
     engines: {node: '>=22.13.1', pnpm: '>=10.4.1'}
 
   estraverse@5.3.0:
@@ -4164,7 +4164,7 @@ snapshots:
     dependencies:
       estraverse: 5.3.0
 
-  esroll@0.4.2:
+  esroll@0.4.3:
     dependencies:
       '@rollup/plugin-json': 6.1.0(rollup@4.40.0)
       '@rollup/pluginutils': 5.1.4(rollup@4.40.0)
