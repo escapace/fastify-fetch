@@ -40,11 +40,11 @@ importers:
         specifier: 9.20.1
         version: 9.20.1(jiti@2.4.2)
       eslint-config-escapace:
-        specifier: 5.6.0
-        version: 5.6.0(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3)
+        specifier: 5.7.1
+        version: 5.7.1(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3)
       esroll:
-        specifier: 0.4.3
-        version: 0.4.3
+        specifier: 0.4.5
+        version: 0.4.5
       fastify:
         specifier: 5.2.1
         version: 5.2.1
@@ -1240,11 +1240,11 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-config-escapace@5.6.0:
-    resolution: {integrity: sha512-KHCd3jSqa2qKrp/BVQ2PMawnH7kln9z2TOzg4hsXeUpcIOfw+vd5fzLWpyxnVjA9GKGAzlfcZzHOoIbWTMZkew==}
+  eslint-config-escapace@5.7.1:
+    resolution: {integrity: sha512-RzHfr+zRF9ZcZf2WCE7cwxFB2ozKpZ1vuCzOgM6iPmC/hlEdLuY+0qAFq8goCKRNFW4NVOCrhTirw28WL5VW5g==}
     engines: {node: '>=22.13.1', pnpm: '>=10.4.1'}
     peerDependencies:
-      eslint: '>=9.26.0'
+      eslint: '>=9.27.0'
 
   eslint-config-flat-gitignore@2.1.0:
     resolution: {integrity: sha512-cJzNJ7L+psWp5mXM7jBX+fjHtBvvh06RBlcweMhKD8jWqQw0G78hOW5tpVALGHGFPsBV+ot2H+pdDGJy6CV8pA==}
@@ -1365,8 +1365,8 @@ packages:
     resolution: {integrity: sha512-KmfKL3b6G+RXvP8N1vr3Tq1kL/oCFgn2NYXEtqP8/L3pKapUA4G8cFVaoF3SU323CD4XypR/ffioHmkti6/Tag==}
     engines: {node: '>=4.0'}
 
-  esroll@0.4.3:
-    resolution: {integrity: sha512-6zb66Tq25cDCTCxZvwSEPXsQydhdWaWvpVqUu5g9EUvlz+XuN8ZwhCfO7iJMvexvn09rtSKd9s4XuJMCem0JQg==}
+  esroll@0.4.5:
+    resolution: {integrity: sha512-h3y8kIWTS5CRrrOyjFZtwaCts7TIMCqmo6oMFu6258iIdz3gnuzuaGDrBqO3aUor4ArvscuqLS7ziW6rg57NDg==}
     engines: {node: '>=22.13.1', pnpm: '>=10.4.1'}
 
   estraverse@5.3.0:
@@ -2186,9 +2186,9 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
-  pretty-bytes@6.1.1:
-    resolution: {integrity: sha512-mQUvGU6aUFQ+rNvTIAcZuWGRT9a6f6Yrg9bHs4ImKF+HZCEK+plBvnAZYSIQztknZF2qnzNtr6F8s0+IuptdlQ==}
-    engines: {node: ^14.13.1 || >=16.0.0}
+  pretty-bytes@7.0.0:
+    resolution: {integrity: sha512-U5otLYPR3L0SVjHGrkEUx5mf7MxV2ceXeE7VwWPk+hyzC5drNohsOGNPDZqxCqyX1lkbEN4kl1LiI8QFd7r0ZA==}
+    engines: {node: '>=20'}
 
   pretty-ms@9.2.0:
     resolution: {integrity: sha512-4yf0QO/sllf/1zbZWYnvWw3NxCQwLXKzIj0G849LSufP15BXKM0rbD2Z3wVnkMfjdn/CB0Dpp444gYAACdsplg==}
@@ -3956,7 +3956,7 @@ snapshots:
       eslint: 9.20.1(jiti@2.4.2)
       semver: 7.7.2
 
-  eslint-config-escapace@5.6.0(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3):
+  eslint-config-escapace@5.7.1(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3):
     dependencies:
       '@stylistic/eslint-plugin': 4.4.0(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3)
       '@typescript-eslint/utils': 8.33.0(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3)
@@ -4181,7 +4181,7 @@ snapshots:
     dependencies:
       estraverse: 5.3.0
 
-  esroll@0.4.3:
+  esroll@0.4.5:
     dependencies:
       '@rollup/plugin-json': 6.1.0(rollup@4.41.1)
       '@rollup/pluginutils': 5.1.4(rollup@4.41.1)
@@ -4190,7 +4190,7 @@ snapshots:
       esbuild: 0.25.5
       find-up: 7.0.0
       is-path-inside: 4.0.0
-      pretty-bytes: 6.1.1
+      pretty-bytes: 7.0.0
       rollup: 4.41.1
       source-map: 0.7.4
       zx: 8.5.4
@@ -4962,7 +4962,7 @@ snapshots:
 
   prettier@3.5.1: {}
 
-  pretty-bytes@6.1.1: {}
+  pretty-bytes@7.0.0: {}
 
   pretty-ms@9.2.0:
     dependencies:
