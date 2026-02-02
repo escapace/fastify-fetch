@@ -26,7 +26,7 @@
     "fastify-plugin": "5.0.1",
     "knip": "5.44.4",
     "lefthook": "1.10.10",
-    "lodash-es": "4.17.21",
+    "lodash-es": "4.17.23",
     "prettier": "3.5.1",
     "prettier-config-escapace": "1.2.1",
     "syncpack": "13.0.2",
