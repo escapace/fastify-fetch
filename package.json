@@ -28,7 +28,7 @@
     "lefthook": "1.10.10",
     "lodash-es": "4.17.23",
     "prettier": "3.5.1",
-    "prettier-config-escapace": "1.2.1",
+    "prettier-config-escapace": "1.2.2",
     "syncpack": "13.0.2",
     "tsx": "4.19.3",
     "typescript": "5.7.3",
