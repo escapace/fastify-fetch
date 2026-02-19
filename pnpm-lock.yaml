@@ -64,8 +64,8 @@ importers:
         specifier: 3.5.1
         version: 3.5.1
       prettier-config-escapace:
-        specifier: 1.2.1
-        version: 1.2.1
+        specifier: 1.2.2
+        version: 1.2.2
       syncpack:
         specifier: 13.0.2
         version: 13.0.2(typescript@5.7.3)
@@ -2224,8 +2224,9 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier-config-escapace@1.2.1:
-    resolution: {integrity: sha512-piOy4gQTfKum5UV8vnjdB3Ap0sCFtaOvTbo956JXOfpzrTONKb+hM5IO9APweRJPRv8cQFcoRD4hLmWSknJ0ng==}
+  prettier-config-escapace@1.2.2:
+    resolution: {integrity: sha512-taCRdqpCvU5QO5lFBbd07RhTMTUvuW74fq7bjPQwn+KRf2DP3Z38bV6d+AQ1UDVklQf8o6eIB1ACJ6r4IdF5ag==}
+    engines: {pnpm: '>=10.29.2'}
 
   prettier@3.5.1:
     resolution: {integrity: sha512-hPpFQvHwL3Qv5AdRvBFMhnKo4tYxp0ReXiPn2bxkiohEX6mBeBwEpBSQTkD458RaaDKQMYSp4hX4UtfUTA5wDw==}
@@ -5021,7 +5022,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-config-escapace@1.2.1: {}
+  prettier-config-escapace@1.2.2: {}
 
   prettier@3.5.1: {}
 
