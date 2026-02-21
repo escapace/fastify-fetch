@@ -6,14 +6,28 @@ const example = async () => {
     logger: true,
   })
 
-  await app.register(fastifyFetch)
+  await app.register(fastifyFetch, {
+    policy: {
+      defaultContract: 'fetch',
+      defaultTransport: 'internal-buffered',
+      route: ({ currentUrl }) => {
+        if (currentUrl.pathname.startsWith('/downloads/')) {
+          return {
+            contract: 'wire-stream',
+            transport: 'internal-stream',
+          }
+        }
 
-  // Declare a route
-  app.get('/', (_, reply) => {
+        return 'internal-buffered'
+      },
+    },
+  })
+
+  app.get('/', (_request, reply) => {
     void reply.send({ hello: 'world' })
   })
 
-  const response = await app.fetch('https://github.com/')
+  const response = await app.fetch('https://example.com/')
 
   if (response.ok) {
     console.log(await response.text())
