@@ -1,6 +1,7 @@
 name: scorecard
 
-permissions: {}
+permissions:
+  contents: read
 
 on:
   branch_protection_rule:

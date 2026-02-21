@@ -1,18 +1,7 @@
-name: ci
+name: release-github-pages
 
 on:
-  pull_request:
-    branches:
-      - trunk
-    paths-ignore:
-      - README.md
-      - LICENSE
-  push:
-    branches:
-      - trunk
-    paths-ignore:
-      - README.md
-      - LICENSE
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -37,12 +26,24 @@ jobs:
     permissions:
       contents: read
       packages: read
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     uses: escapace/workflows/.github/workflows/ci-typescript.yaml@trunk
     with:
-      enable-codecov: ${{ !github.event.repository.private }}
+      enable-artifact-upload: false
+      enable-codecov: false
+      enable-github-pages: ${{ fromJSON(needs.context.outputs.github-pages) }}
+      github-pages-path: ${{ needs.context.outputs.github-pages-path }}
       node-version: ${{ needs.context.outputs.node-version }}
       pnpm-version: ${{ needs.context.outputs.pnpm-version }}
       ref: ${{ needs.context.outputs.ref }}
       version: ${{ needs.context.outputs.version }}
+
+  release-github-pages:
+    if: needs.context.outputs.github-pages
+    needs:
+      - context
+      - continuous-integration
+    permissions:
+      contents: read
+      id-token: write
+      pages: write
+    uses: escapace/workflows/.github/workflows/release-github-pages.yaml@trunk

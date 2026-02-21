@@ -3,7 +3,8 @@ name: dependency-review
 on:
   - pull_request
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   dependency-review:

@@ -1,18 +1,21 @@
 version: 2
 
 updates:
-  - directory: '/'
+  - cooldown:
+      default-days: 7
+      include:
+        - '*'
+    directory: '/'
     groups:
       actions:
         update-types:
           - 'minor'
           - 'patch'
-    labels:
-      - 'dependencies'
-      - 'github-actions'
+    labels: []
+    open-pull-requests-limit: 5
     package-ecosystem: 'github-actions'
     schedule:
-      day: saturday
+      day: monday
       interval: weekly
       time: '07:00'
       timezone: Etc/UTC

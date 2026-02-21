@@ -10,10 +10,14 @@ on:
 
 permissions:
   contents: read
-  packages: read
 
 jobs:
   context:
+    permissions:
+      checks: read
+      contents: read
+      pull-requests: read
+      statuses: read
     uses: escapace/workflows/.github/workflows/context.yaml@trunk
 
   codeql-analysis:

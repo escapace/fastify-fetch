@@ -91,7 +91,7 @@ describe('./src/index.spec.ts', () => {
       app.fetch('https://example.com:8080/hello', {
         method: 'GET',
       }),
-    ).rejects.toThrow(/kaboom/i)
+    ).rejects.toThrowError(/kaboom/i)
   })
 
   it('returns non-chunked payload', async () => {
@@ -120,7 +120,7 @@ describe('./src/index.spec.ts', () => {
       'connection': 'keep-alive',
       'content-length': `${output.length}`,
       'content-type': 'text/plain',
-      // eslint-disable-next-line typescript/no-non-null-assertion
+
       'date': `${response.headers.get('date')!}`,
       'x-extra': 'hello',
     })
@@ -141,7 +141,7 @@ describe('./src/index.spec.ts', () => {
       app.fetch('http://example.com:8080/hello', {
         method: 'UNKNOWN_METHOD',
       }),
-    ).rejects.toThrow(/UNKNOWN_METHOD/)
+    ).rejects.toThrowError(/UNKNOWN_METHOD/)
   })
 
   it('passes host option as host header', async () => {
@@ -249,7 +249,7 @@ describe('./src/index.spec.ts', () => {
 
     await app.register(fastifyFetch)
 
-    await expect(app.fetch('gopher://example.com')).rejects.toThrow(/is not supported/)
+    await expect(app.fetch('gopher://example.com')).rejects.toThrowError(/is not supported/)
   })
 
   it('should handle no content response with gzip encoding', async () => {

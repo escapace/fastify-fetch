@@ -1,0 +1,40 @@
+name: auto-merge
+
+permissions: {}
+
+on:
+  schedule:
+    - cron: '7,37 9-16 * * 3'
+    - cron: '7,37 9-16 * * 4'
+  workflow_dispatch:
+    inputs:
+      merge-strategy:
+        default: rebase,squash
+        description: 'ranked merge strategy preference'
+        options:
+          - squash,rebase
+          - rebase,squash
+          - squash
+          - rebase
+        required: false
+        type: choice
+      pr-number:
+        description: 'single pr number'
+        required: false
+        type: string
+
+concurrency:
+  cancel-in-progress: true
+  group: auto-merge-dispatch
+
+jobs:
+  auto-merge:
+    permissions:
+      checks: read
+      contents: write
+      pull-requests: write
+      statuses: read
+    uses: escapace/workflows/.github/workflows/auto-merge.yaml@trunk
+    with:
+      merge-strategy: ${{ inputs.merge-strategy }}
+      pr-number: ${{ inputs.pr-number }}

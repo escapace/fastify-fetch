@@ -156,9 +156,7 @@ const httpRedirectFetch = async (
 
 const hasMatchFunction = (options: Options) => typeof options.match === 'function'
 const match = (url: URL, request: Request, options: Options) =>
-  !hasMatchFunction(options) ||
-  // eslint-disable-next-line typescript/no-non-null-assertion
-  (hasMatchFunction(options) && options.match!(url, request))
+  !hasMatchFunction(options) || (hasMatchFunction(options) && options.match!(url, request))
 
 const assertURLSupported = (url: URL) => {
   if (!supportedSchemas.has(url.protocol)) {

@@ -1,0 +1,39 @@
+blockExoticSubdeps: true
+childConcurrency: 1
+minimumReleaseAge: 10080
+minimumReleaseAgeExclude:
+  - '@caslon/*'
+  - '@cassiopeia/*'
+  - '@cepheus/*'
+  - '@escapace/*'
+  - '@pangram/*'
+  - '@pointe/*'
+  - caslon
+  - cassiopeia
+  - cepheus
+  - coastal
+  - eslint-config-escapace
+  - esroll
+  - fastify-fetch
+  - pointe
+  - prettier-config-escapace
+  - seedpods
+  - snaproll
+  - syncpack
+  - syncpack-darwin-arm64
+  - syncpack-darwin-x64
+  - syncpack-linux-arm64
+  - syncpack-linux-arm64-musl
+  - syncpack-linux-x64
+  - syncpack-linux-x64-musl
+  - syncpack-windows-arm64
+  - syncpack-windows-x64
+onlyBuiltDependencies:
+  - esbuild
+  - lefthook
+strictDepBuilds: true
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - eslint
+  - '@eslint/*'
+  - ts-api-utils@2.3.0

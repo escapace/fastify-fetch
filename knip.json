@@ -8,12 +8,15 @@
     "src/**/example*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,vue}",
     "src/cli.ts!",
     "src/index.ts!",
-    "src/types.ts"
+    "src/types.ts",
+    "vitest.config.*.ts",
+    "vitest.config.ts"
   ],
   "ignore": ["**/*.d.+([a-zA-Z0-9]).ts", "**/*.d.ts", "lib/**"],
-  "ignoreBinaries": ["ncu"],
+  "ignoreBinaries": ["ncu", "taze"],
   "ignoreDependencies": [
     "@commitlint/cli",
+    "@escapace/syncpack-configuration",
     "@microsoft/api-extractor",
     "eslint-config-escapace",
     "prettier",

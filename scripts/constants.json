@@ -9,7 +9,13 @@
       "mainFields": ["module", "main"],
       "outdir": "lib/node",
       "platform": "node",
-      "target": ["node22.13.1"]
+      "target": ["node24.13.0"]
     }
+  },
+  "declaration": {
+    "declarationRollup": true,
+    "documentation": true,
+    "entryPoints": ["src/index.ts"],
+    "tsconfig": "tsconfig-build.json"
   }
 }
