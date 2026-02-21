@@ -1,6 +1,9 @@
 blockExoticSubdeps: true
+
 childConcurrency: 1
+
 minimumReleaseAge: 10080
+
 minimumReleaseAgeExclude:
   - '@caslon/*'
   - '@cassiopeia/*'
@@ -28,11 +31,16 @@ minimumReleaseAgeExclude:
   - syncpack-linux-x64-musl
   - syncpack-windows-arm64
   - syncpack-windows-x64
+
 onlyBuiltDependencies:
+  - '@ast-grep/cli'
   - esbuild
   - lefthook
+
 strictDepBuilds: true
+
 trustPolicy: no-downgrade
+
 trustPolicyExclude:
   - eslint
   - '@eslint/*'

@@ -1,4 +1,5 @@
-import fastify from 'fastify'
+import fastify, { type LightMyRequestResponse } from 'fastify'
+import type { InjectOptions } from 'light-my-request'
 import zlib from 'node:zlib'
 import { Request } from 'undici'
 import { assert, describe, expect, it } from 'vitest'
@@ -523,6 +524,42 @@ describe('./src/index.spec.ts', () => {
     assert.equal(zlib.gunzipSync(payload).toString(), 'hello world')
   })
 
+  it('keeps wire-stream contract encoded payload on internal-buffered transport', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch, {
+      policy: {
+        route: ({ currentUrl }) => {
+          if (currentUrl.pathname === '/wire-buffered') {
+            return {
+              contract: 'wire-stream',
+              transport: 'internal-buffered',
+            }
+          }
+
+          return 'internal-buffered'
+        },
+      },
+    })
+
+    const rawPayload = zlib.gzipSync('hello world')
+
+    app.get('/wire-buffered', (_request, reply) => {
+      reply.raw.statusCode = 200
+      reply.raw.setHeader('Content-Encoding', 'gzip')
+      reply.raw.setHeader('Content-Length', rawPayload.byteLength.toString())
+      reply.raw.setHeader('Content-Type', 'text/plain')
+      reply.raw.end(rawPayload)
+    })
+
+    const response = await app.fetch('https://example.com/wire-buffered')
+    const payload = Buffer.from(await response.arrayBuffer())
+
+    assert.equal(response.headers.get('content-encoding'), 'gzip')
+    assert.equal(response.headers.get('content-length'), rawPayload.byteLength.toString())
+    assert.notEqual(payload.toString(), 'hello world')
+    assert.equal(zlib.gunzipSync(payload).toString(), 'hello world')
+  })
+
   it('delegates on boundary by default and can reject by policy', async () => {
     const delegatedApp = fastify()
     const delegatedCalls: string[] = []
@@ -616,15 +653,17 @@ describe('./src/index.spec.ts', () => {
     assert.equal(disabledExternalCalls, 1)
 
     const enabledApp = fastify()
-    let enabledExternalCalls = 0
+    const enabledExternalCalls: string[] = []
 
     await enabledApp.register(fastifyFetch, {
       allowPerCallOverrides: true,
       policy: {
         route: () => 'external',
       },
-      externalFetch: async () => {
-        enabledExternalCalls += 1
+      externalFetch: async (requestInfo, requestInit) => {
+        const request = new Request(requestInfo, requestInit)
+
+        enabledExternalCalls.push(request.url)
 
         return await Promise.resolve(new Response('external', { status: 200 }))
       },
@@ -641,7 +680,16 @@ describe('./src/index.spec.ts', () => {
     })
 
     assert.equal(await enabledResult.text(), 'internal')
-    assert.equal(enabledExternalCalls, 0)
+    assert.equal(enabledExternalCalls.length, 0)
+
+    const forcedInternalDataResult = await enabledApp.fetch('data:text/plain,hello', {
+      fastifyFetch: {
+        transport: 'internal-buffered',
+      },
+    })
+
+    assert.equal(await forcedInternalDataResult.text(), 'external')
+    assert.deepEqual(enabledExternalCalls, ['data:text/plain,hello'])
   })
 
   it('supports request overflow fallback and reject policies', async () => {
@@ -823,6 +871,50 @@ describe('./src/index.spec.ts', () => {
 
     assert.equal(await response.text(), '0123456789abcdef')
     assert.equal(calls, 2)
+  })
+
+  it('uses payloadAsStream and avoids rawPayload buffering in internal-stream mode', async () => {
+    const app = fastify()
+
+    await app.register(fastifyFetch, {
+      policy: {
+        route: () => ({
+          contract: 'wire-stream',
+          transport: 'internal-stream',
+        }),
+      },
+    })
+
+    app.get('/download', (_request, reply) => {
+      reply.raw.statusCode = 200
+      reply.raw.setHeader('content-type', 'application/octet-stream')
+      reply.raw.end(Buffer.alloc(128 * 1024, 1))
+    })
+
+    type PromiseInject = (options: string | InjectOptions) => Promise<LightMyRequestResponse>
+
+    const originalInject = app.inject.bind(app) as PromiseInject
+    const observations: Array<{ payloadAsStream: boolean; rawPayloadUndefined: boolean }> = []
+
+    ;(app as { inject: PromiseInject }).inject = async (options) => {
+      const response = await originalInject(options)
+
+      if (typeof options === 'object' && options !== null) {
+        observations.push({
+          payloadAsStream: options.payloadAsStream === true,
+          rawPayloadUndefined: response.rawPayload === undefined,
+        })
+      }
+
+      return response
+    }
+
+    const response = await app.fetch('https://example.com/download')
+    const payload = Buffer.from(await response.arrayBuffer())
+
+    assert.equal(payload.byteLength, 128 * 1024)
+    assert.ok(observations.some((value) => value.payloadAsStream))
+    assert.ok(observations.some((value) => value.payloadAsStream && value.rawPayloadUndefined))
   })
 
   it('builds route context with redirect metadata', async () => {

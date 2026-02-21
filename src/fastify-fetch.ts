@@ -403,7 +403,12 @@ const buildResponseFromInternal = async (result: InternalExecutionResult) => {
     const rawPayload = result.response.rawPayload ?? Buffer.alloc(0)
     let payload = rawPayload
 
-    if (!shouldSuppressBody && codings !== undefined && codings.length > 0) {
+    if (
+      !shouldSuppressBody &&
+      codings !== undefined &&
+      codings.length > 0 &&
+      result.contract !== 'wire-stream'
+    ) {
       payload = await decodeBufferPayload(payload, codings)
 
       if (result.contract === 'forward-safe') {

@@ -11,6 +11,7 @@
     "undici": "^7.22.0"
   },
   "devDependencies": {
+    "@ast-grep/napi": "0.40.5",
     "@commitlint/cli": "20.4.1",
     "@commitlint/config-conventional": "20.4.1",
     "@escapace/pnpm-pack": "0.7.0",
@@ -26,6 +27,7 @@
     "knip": "5.83.1",
     "lefthook": "2.1.1",
     "light-my-request": "6.6.0",
+    "mlly": "1.8.0",
     "prettier": "3.8.1",
     "prettier-config-escapace": "1.2.2",
     "syncpack": "14.0.0",
@@ -57,7 +59,8 @@
   },
   "repository": "escapace/fastify-fetch",
   "scripts": {
-    "build": "tsx scripts/build.ts",
+    "build": "pnpm run codegen && tsx scripts/build.ts",
+    "codegen": "tsx scripts/codegen.ts",
     "format": "syncpack format && eslint --no-warn-ignored --fix && prettier --no-error-on-unmatched-pattern -uw .",
     "lint": "ls-lint --config .ls-lint.yaml && knip --no-config-hints && eslint",
     "ls-lint": "ls-lint --config .ls-lint.yaml",
