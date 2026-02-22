@@ -560,6 +560,211 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
     assert.equal(zlib.gunzipSync(payload).toString(), 'hello world')
   })
 
+  it('decodes supported mixed content-encoding chains in fetch contract and preserves wire headers', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch)
+
+    const decodedBody = 'hello mixed fetch'
+    const rawPayload = zlib.brotliCompressSync(zlib.gzipSync(decodedBody))
+
+    app.get('/mixed-fetch', (_request, reply) => {
+      reply.raw.statusCode = 200
+      reply.raw.setHeader('Content-Encoding', 'gzip, br')
+      reply.raw.setHeader('Content-Length', rawPayload.byteLength.toString())
+      reply.raw.setHeader('Content-Type', 'text/plain')
+      reply.raw.end(rawPayload)
+    })
+
+    const response = await app.fetch('https://example.com/mixed-fetch')
+
+    assert.equal(await response.text(), decodedBody)
+    assert.equal(response.headers.get('content-encoding'), 'gzip, br')
+    assert.equal(response.headers.get('content-length'), rawPayload.byteLength.toString())
+  })
+
+  it('decodes supported mixed content-encoding chains in forward-safe contract and normalizes headers', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch, {
+      policy: {
+        route: ({ currentUrl }) => {
+          if (currentUrl.pathname === '/mixed-forward-safe') {
+            return {
+              contract: 'forward-safe',
+              transport: 'internal-buffered',
+            }
+          }
+
+          return 'internal-buffered'
+        },
+      },
+    })
+
+    const decodedBody = 'hello mixed forward-safe'
+    const rawPayload = zlib.brotliCompressSync(zlib.gzipSync(decodedBody))
+
+    app.get('/mixed-forward-safe', (_request, reply) => {
+      reply.raw.statusCode = 200
+      reply.raw.setHeader('Content-Encoding', 'gzip, br')
+      reply.raw.setHeader('Content-Length', rawPayload.byteLength.toString())
+      reply.raw.setHeader('Content-Type', 'text/plain')
+      reply.raw.setHeader('x-extra', 'kept')
+      reply.raw.end(rawPayload)
+    })
+
+    const response = await app.fetch('https://example.com/mixed-forward-safe')
+
+    assert.equal(await response.text(), decodedBody)
+    assert.equal(response.headers.get('content-encoding'), null)
+    assert.equal(response.headers.get('content-length'), Buffer.byteLength(decodedBody).toString())
+    assert.equal(response.headers.get('x-extra'), 'kept')
+  })
+
+  it('keeps supported mixed content-encoding chains encoded in wire-stream contract', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch, {
+      policy: {
+        route: ({ currentUrl }) => {
+          if (currentUrl.pathname === '/mixed-wire') {
+            return {
+              contract: 'wire-stream',
+              transport: 'internal-buffered',
+            }
+          }
+
+          return 'internal-buffered'
+        },
+      },
+    })
+
+    const decodedBody = 'hello mixed wire-stream'
+    const rawPayload = zlib.brotliCompressSync(zlib.gzipSync(decodedBody))
+
+    app.get('/mixed-wire', (_request, reply) => {
+      reply.raw.statusCode = 200
+      reply.raw.setHeader('Content-Encoding', 'gzip, br')
+      reply.raw.setHeader('Content-Length', rawPayload.byteLength.toString())
+      reply.raw.setHeader('Content-Type', 'text/plain')
+      reply.raw.end(rawPayload)
+    })
+
+    const response = await app.fetch('https://example.com/mixed-wire')
+    const payload = Buffer.from(await response.arrayBuffer())
+
+    assert.equal(response.headers.get('content-encoding'), 'gzip, br')
+    assert.equal(response.headers.get('content-length'), rawPayload.byteLength.toString())
+    assert.notEqual(payload.toString(), decodedBody)
+    assert.equal(zlib.gunzipSync(zlib.brotliDecompressSync(payload)).toString(), decodedBody)
+  })
+
+  it('decodes supported mixed content-encoding chains in fetch contract on internal-stream transport', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch, {
+      policy: {
+        route: ({ currentUrl }) => {
+          if (currentUrl.pathname === '/mixed-fetch-stream') {
+            return {
+              contract: 'fetch',
+              transport: 'internal-stream',
+            }
+          }
+
+          return 'internal-buffered'
+        },
+      },
+    })
+
+    const decodedBody = 'hello mixed fetch stream'
+    const rawPayload = zlib.brotliCompressSync(zlib.gzipSync(decodedBody))
+
+    app.get('/mixed-fetch-stream', (_request, reply) => {
+      reply.raw.statusCode = 200
+      reply.raw.setHeader('Content-Encoding', 'gzip, br')
+      reply.raw.setHeader('Content-Length', rawPayload.byteLength.toString())
+      reply.raw.setHeader('Content-Type', 'text/plain')
+      reply.raw.end(rawPayload)
+    })
+
+    const response = await app.fetch('https://example.com/mixed-fetch-stream')
+
+    assert.equal(await response.text(), decodedBody)
+    assert.equal(response.headers.get('content-encoding'), 'gzip, br')
+    assert.equal(response.headers.get('content-length'), rawPayload.byteLength.toString())
+  })
+
+  it('decodes supported mixed content-encoding chains in forward-safe contract on internal-stream transport', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch, {
+      policy: {
+        route: ({ currentUrl }) => {
+          if (currentUrl.pathname === '/mixed-forward-safe-stream') {
+            return {
+              contract: 'forward-safe',
+              transport: 'internal-stream',
+            }
+          }
+
+          return 'internal-buffered'
+        },
+      },
+    })
+
+    const decodedBody = 'hello mixed forward-safe stream'
+    const rawPayload = zlib.brotliCompressSync(zlib.gzipSync(decodedBody))
+
+    app.get('/mixed-forward-safe-stream', (_request, reply) => {
+      reply.raw.statusCode = 200
+      reply.raw.setHeader('Content-Encoding', 'gzip, br')
+      reply.raw.setHeader('Content-Length', rawPayload.byteLength.toString())
+      reply.raw.setHeader('Content-Type', 'text/plain')
+      reply.raw.setHeader('x-extra', 'kept')
+      reply.raw.end(rawPayload)
+    })
+
+    const response = await app.fetch('https://example.com/mixed-forward-safe-stream')
+
+    assert.equal(await response.text(), decodedBody)
+    assert.equal(response.headers.get('content-encoding'), null)
+    assert.equal(response.headers.get('content-length'), null)
+    assert.equal(response.headers.get('x-extra'), 'kept')
+  })
+
+  it('keeps supported mixed content-encoding chains encoded in wire-stream contract on internal-stream transport', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch, {
+      policy: {
+        route: ({ currentUrl }) => {
+          if (currentUrl.pathname === '/mixed-wire-stream') {
+            return {
+              contract: 'wire-stream',
+              transport: 'internal-stream',
+            }
+          }
+
+          return 'internal-buffered'
+        },
+      },
+    })
+
+    const decodedBody = 'hello mixed wire stream'
+    const rawPayload = zlib.brotliCompressSync(zlib.gzipSync(decodedBody))
+
+    app.get('/mixed-wire-stream', (_request, reply) => {
+      reply.raw.statusCode = 200
+      reply.raw.setHeader('Content-Encoding', 'gzip, br')
+      reply.raw.setHeader('Content-Length', rawPayload.byteLength.toString())
+      reply.raw.setHeader('Content-Type', 'text/plain')
+      reply.raw.end(rawPayload)
+    })
+
+    const response = await app.fetch('https://example.com/mixed-wire-stream')
+    const payload = Buffer.from(await response.arrayBuffer())
+
+    assert.equal(response.headers.get('content-encoding'), 'gzip, br')
+    assert.equal(response.headers.get('content-length'), rawPayload.byteLength.toString())
+    assert.notEqual(payload.toString(), decodedBody)
+    assert.equal(zlib.gunzipSync(zlib.brotliDecompressSync(payload)).toString(), decodedBody)
+  })
+
   it('delegates on boundary by default and can reject by policy', async () => {
     const delegatedApp = fastify()
     const delegatedCalls: string[] = []

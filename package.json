@@ -1,6 +1,6 @@
 {
   "name": "fastify-fetch",
-  "description": "",
+  "description": "Fastify plugin that decorates the Fastify instance with app.fetch and routes requests through internal injection or external fetch according to policy.",
   "version": "0.0.0",
   "author": {
     "name": "escapace",

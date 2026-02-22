@@ -706,8 +706,15 @@ const followRedirect = async (
   }
 }
 
-// eslint-disable-next-line typescript/require-await
-export const fastifyFetch = fp<FastifyFetchOptions>(async (app, options = {}) => {
+/**
+ * Decorates a Fastify instance with `app.fetch` and applies policy-routed internal or external request execution.
+ *
+ * @remarks
+ * Routing and response behavior are resolved from plugin policy defaults and optional per-call overrides when {@link FastifyFetchOptions.allowPerCallOverrides} is `true`.
+ * Internal execution failures are normalized to `TypeError('fetch failed')` with nested causes when available.
+ * Delegated external execution follows the configured external fetch behavior.
+ */
+export const fastifyFetch = fp<FastifyFetchOptions>((app, options = {}) => {
   const compiled = compilePolicy(options)
 
   app.decorate(

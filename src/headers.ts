@@ -13,6 +13,15 @@ import { Headers } from 'undici'
   Based on: https://github.com/google/j2objc/commit/16820fdbc8f76ca0c33472810ce0cb03d20efe25
   Credits to: https://github.com/tomball for original and https://github.com/chrusart for JavaScript implementation
 */
+/**
+ * Splits a potentially comma-joined `set-cookie` header value into individual cookie values.
+ *
+ * @remarks
+ * Commas inside cookie attributes such as `Expires` are preserved, so commas are treated as separators only when they begin a new cookie key-value pair.
+ *
+ * @param cookiesString - Raw `set-cookie` header value that may contain one or more cookies.
+ * @returns Cookie header values in original order.
+ */
 export function splitCookiesString(cookiesString: string) {
   const cookiesStrings = []
   let pos = 0
@@ -79,6 +88,15 @@ export function splitCookiesString(cookiesString: string) {
   return cookiesStrings
 }
 
+/**
+ * Converts Node.js outgoing headers into a Fetch `Headers` instance.
+ *
+ * @remarks
+ * Numeric values are stringified and `undefined` values are skipped.
+ *
+ * @param nodeHeaders - Node.js outgoing header object.
+ * @returns Fetch headers containing all defined entries.
+ */
 export function fromNodeHeaders(nodeHeaders: OutgoingHttpHeaders): Headers {
   const headers = new Headers()
   for (const [key, value] of Object.entries(nodeHeaders)) {
@@ -96,6 +114,15 @@ export function fromNodeHeaders(nodeHeaders: OutgoingHttpHeaders): Headers {
   return headers
 }
 
+/**
+ * Converts Fetch `Headers` into a Node.js outgoing header object.
+ *
+ * @remarks
+ * `set-cookie` values are normalized to preserve multiple cookie entries when comma-joined values are encountered.
+ *
+ * @param headers - Fetch headers to convert.
+ * @returns Node.js outgoing header object.
+ */
 export function toNodeHeaders(headers: Headers): OutgoingHttpHeaders {
   const nodeHeaders: OutgoingHttpHeaders = {}
   const cookies: string[] = []
