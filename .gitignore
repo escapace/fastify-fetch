@@ -10,6 +10,7 @@
 .env.production.local
 .env.test.local
 .eslintcache
+.firecrawl/
 .fusebox/
 .grunt
 .lock-wscript
@@ -60,4 +61,3 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 web_modules/
 yarn-debug.log*
 yarn-error.log*
-.firecrawl/

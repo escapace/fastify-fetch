@@ -557,4 +557,19 @@ describe('./src/__tests__/testing-gaps.spec.ts', () => {
 
     assert.ok(sameOrigin(A, B))
   })
+
+  it('[SO-002] treats default and explicit tuple-origin ports as same-origin', () => {
+    const A = new URL('https://example.com/a')
+    const B = new URL('https://example.com:443/b')
+
+    assert.ok(sameOrigin(A, B))
+  })
+
+  it('[SO-003] rejects tuple-origin mismatches in scheme, host, or port', () => {
+    assert.notOk(sameOrigin(new URL('https://example.com/a'), new URL('http://example.com/a')))
+    assert.notOk(sameOrigin(new URL('https://example.com/a'), new URL('https://api.example.com/a')))
+    assert.notOk(
+      sameOrigin(new URL('https://example.com:444/a'), new URL('https://example.com:443/a')),
+    )
+  })
 })

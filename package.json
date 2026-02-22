@@ -46,9 +46,9 @@
     }
   },
   "files": [
+    "NOTICE",
     "lib/node",
-    "lib/types",
-    "NOTICE"
+    "lib/types"
   ],
   "homepage": "https://github.com/escapace/fastify-fetch#readme",
   "license": "MPL-2.0",

@@ -89,6 +89,66 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
     await expect(operation).rejects.toThrowError(/aborted/i)
   })
 
+  it('rejects with AbortError when aborted during delegated external fetch after redirect', async () => {
+    const app = fastify()
+
+    await app.register(fastifyFetch, {
+      policy: {
+        route: ({ currentUrl }) => {
+          if (currentUrl.hostname === 'example.com') {
+            return 'internal-buffered'
+          }
+
+          return 'external'
+        },
+      },
+      externalFetch: async (requestInfo, requestInit) => {
+        const request = new Request(requestInfo, requestInit)
+
+        await new Promise<void>((resolve, reject) => {
+          const timer = setTimeout(() => {
+            request.signal.removeEventListener('abort', onAbort)
+            resolve()
+          }, 100)
+
+          const onAbort = () => {
+            clearTimeout(timer)
+            request.signal.removeEventListener('abort', onAbort)
+            reject(new DOMException('This operation was aborted', 'AbortError'))
+          }
+
+          if (request.signal.aborted) {
+            onAbort()
+            return
+          }
+
+          request.signal.addEventListener('abort', onAbort, { once: true })
+        })
+
+        return await Promise.resolve(new Response('external', { status: 200 }))
+      },
+    })
+
+    app.get('/start', (_request, reply) => {
+      reply.raw.statusCode = 308
+      reply.raw.setHeader('Location', 'https://other.example/slow')
+      reply.raw.end()
+    })
+
+    const controller = new AbortController()
+    const operation = app.fetch('https://example.com/start', {
+      signal: controller.signal,
+    })
+
+    setTimeout(() => {
+      controller.abort()
+    }, 10)
+
+    await expect(operation).rejects.toMatchObject({
+      name: 'AbortError',
+    })
+  })
+
   it('rewrites 303 POST to GET', async () => {
     const app = fastify()
     await app.register(fastifyFetch)
@@ -131,6 +191,105 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
     })
 
     assert.equal(await response.text(), 'GET')
+  })
+
+  it('rewrites 302 POST to GET and removes request-body headers', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch)
+
+    app.post('/start', (_request, reply) => {
+      reply.raw.statusCode = 302
+      reply.raw.setHeader('Location', '/target')
+      reply.raw.end()
+    })
+
+    app.get('/target', (request, reply) => {
+      void reply.send({
+        contentLanguage: request.headers['content-language'] ?? null,
+        contentLength: request.headers['content-length'] ?? null,
+        contentType: request.headers['content-type'] ?? null,
+        method: request.method,
+      })
+    })
+
+    const response = await app.fetch('https://example.com/start', {
+      body: 'value=1',
+      headers: {
+        'content-language': 'en-US',
+        'content-type': 'text/plain',
+      },
+      method: 'POST',
+    })
+
+    const metadata = (await response.json()) as {
+      contentLanguage: string | null
+      contentLength: string | null
+      contentType: string | null
+      method: string
+    }
+
+    assert.deepEqual(metadata, {
+      contentLanguage: null,
+      contentLength: null,
+      contentType: null,
+      method: 'GET',
+    })
+  })
+
+  it('keeps HEAD on 303 redirects', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch)
+
+    let observedMethod = ''
+
+    app.head('/start', (_request, reply) => {
+      reply.raw.statusCode = 303
+      reply.raw.setHeader('Location', '/target')
+      reply.raw.end()
+    })
+
+    app.all('/target', (request, reply) => {
+      observedMethod = request.method
+      reply.raw.statusCode = 204
+      reply.raw.end()
+    })
+
+    const response = await app.fetch('https://example.com/start', {
+      method: 'HEAD',
+    })
+
+    assert.equal(response.status, 204)
+    assert.equal(observedMethod, 'HEAD')
+  })
+
+  it('keeps method and body for 302 redirects when method is not POST', async () => {
+    const app = fastify()
+
+    app.addContentTypeParser('*', { parseAs: 'string' }, (_request, body, done) => {
+      done(null, body)
+    })
+
+    await app.register(fastifyFetch)
+
+    app.put('/start', (_request, reply) => {
+      reply.raw.statusCode = 302
+      reply.raw.setHeader('Location', '/target')
+      reply.raw.end()
+    })
+
+    app.put('/target', (request, reply) => {
+      void reply.send(`${request.method}:${String(request.body)}`)
+    })
+
+    const response = await app.fetch('https://example.com/start', {
+      body: 'value=1',
+      headers: {
+        'content-type': 'text/plain',
+      },
+      method: 'PUT',
+    })
+
+    assert.equal(await response.text(), 'PUT:value=1')
   })
 
   it('keeps method and body for 307 redirects when body is replayable', async () => {
@@ -202,6 +361,124 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
     assert.deepEqual(calls, ['none'])
   })
 
+  it('strips all sensitive redirect headers on cross-origin transitions', async () => {
+    const app = fastify()
+    const calls: Array<{
+      authorization: string | null
+      cookie: string | null
+      host: string | null
+      proxyAuthorization: string | null
+    }> = []
+
+    await app.register(fastifyFetch, {
+      policy: {
+        route: ({ currentUrl }) => {
+          if (currentUrl.hostname === 'example.com') {
+            return 'internal-buffered'
+          }
+
+          return 'external'
+        },
+      },
+      externalFetch: async (requestInfo, requestInit) => {
+        const request = new Request(requestInfo, requestInit)
+
+        calls.push({
+          authorization: request.headers.get('authorization'),
+          cookie: request.headers.get('cookie'),
+          host: request.headers.get('host'),
+          proxyAuthorization: request.headers.get('proxy-authorization'),
+        })
+
+        return await Promise.resolve(new Response('external', { status: 200 }))
+      },
+    })
+
+    app.get('/start', (_request, reply) => {
+      reply.raw.statusCode = 308
+      reply.raw.setHeader('Location', 'https://other.example/path')
+      reply.raw.end()
+    })
+
+    const response = await app.fetch('https://example.com/start', {
+      headers: {
+        'Authorization': 'Bearer token',
+        'Cookie': 'a=1',
+        'Host': 'spoofed.example',
+        'Proxy-Authorization': 'Basic abc',
+      },
+    })
+
+    assert.equal(await response.text(), 'external')
+    assert.deepEqual(calls, [
+      {
+        authorization: null,
+        cookie: null,
+        host: null,
+        proxyAuthorization: null,
+      },
+    ])
+  })
+
+  it('keeps sensitive headers on same-origin redirects', async () => {
+    const app = fastify()
+    const calls: Array<{
+      authorization: string | null
+      cookie: string | null
+      host: string | null
+      proxyAuthorization: string | null
+    }> = []
+
+    await app.register(fastifyFetch, {
+      policy: {
+        route: ({ currentUrl }) => {
+          if (currentUrl.pathname === '/start') {
+            return 'internal-buffered'
+          }
+
+          return 'external'
+        },
+      },
+      externalFetch: async (requestInfo, requestInit) => {
+        const request = new Request(requestInfo, requestInit)
+
+        calls.push({
+          authorization: request.headers.get('authorization'),
+          cookie: request.headers.get('cookie'),
+          host: request.headers.get('host'),
+          proxyAuthorization: request.headers.get('proxy-authorization'),
+        })
+
+        return await Promise.resolve(new Response('external', { status: 200 }))
+      },
+    })
+
+    app.get('/start', (_request, reply) => {
+      reply.raw.statusCode = 308
+      reply.raw.setHeader('Location', 'https://example.com/target')
+      reply.raw.end()
+    })
+
+    const response = await app.fetch('https://example.com/start', {
+      headers: {
+        'Authorization': 'Bearer token',
+        'Cookie': 'a=1',
+        'Host': 'spoofed.example',
+        'Proxy-Authorization': 'Basic abc',
+      },
+    })
+
+    assert.equal(await response.text(), 'external')
+    assert.deepEqual(calls, [
+      {
+        authorization: 'Bearer token',
+        cookie: 'a=1',
+        host: 'spoofed.example',
+        proxyAuthorization: 'Basic abc',
+      },
+    ])
+  })
+
   it('uses configurable redirect max hops', async () => {
     const app = fastify()
     await app.register(fastifyFetch, {
@@ -230,6 +507,44 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
 
     await expectFetchFailed(
       app.fetch('https://example.com/0'),
+      FETCH_FAILED_CAUSE_MESSAGES.redirectCountExceeded,
+    )
+  })
+
+  it('enforces the default redirect max hops at 20', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch)
+
+    for (let index = 0; index < 20; index += 1) {
+      app.get(`/ok-${index}`, (_request, reply) => {
+        reply.raw.statusCode = 308
+        reply.raw.setHeader('Location', `/ok-${index + 1}`)
+        reply.raw.end()
+      })
+    }
+
+    app.get('/ok-20', (_request, reply) => {
+      void reply.send('ok')
+    })
+
+    for (let index = 0; index <= 20; index += 1) {
+      app.get(`/too-many-${index}`, (_request, reply) => {
+        reply.raw.statusCode = 308
+        reply.raw.setHeader('Location', `/too-many-${index + 1}`)
+        reply.raw.end()
+      })
+    }
+
+    app.get('/too-many-21', (_request, reply) => {
+      void reply.send('done')
+    })
+
+    const accepted = await app.fetch('https://example.com/ok-0')
+
+    assert.equal(await accepted.text(), 'ok')
+
+    await expectFetchFailed(
+      app.fetch('https://example.com/too-many-0'),
       FETCH_FAILED_CAUSE_MESSAGES.redirectCountExceeded,
     )
   })
@@ -299,6 +614,33 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
     )
   })
 
+  it('rejects redirects to blob/about/file/ftp schemes', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch)
+
+    const cases = [
+      ['/to-about', 'about:blank'],
+      ['/to-blob', 'blob:https://other.example/uuid'],
+      ['/to-file', 'file:///tmp/example.txt'],
+      ['/to-ftp', 'ftp://example.com/resource'],
+    ] as const
+
+    for (const [path, location] of cases) {
+      app.get(path, (_request, reply) => {
+        reply.raw.statusCode = 308
+        reply.raw.setHeader('Location', location)
+        reply.raw.end()
+      })
+    }
+
+    for (const [path] of cases) {
+      await expectFetchFailed(
+        app.fetch(`https://example.com${path}`),
+        FETCH_FAILED_CAUSE_MESSAGES.redirectTargetMustBeHttp,
+      )
+    }
+  })
+
   it('delegates data URLs to external fetch', async () => {
     const app = fastify()
     const calls: string[] = []
@@ -339,6 +681,28 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
     assert.deepEqual(calls, ['file:///tmp/example.txt'])
   })
 
+  it('delegates about and blob URLs to external fetch', async () => {
+    const app = fastify()
+    const calls: string[] = []
+
+    await app.register(fastifyFetch, {
+      externalFetch: async (requestInfo, requestInit) => {
+        const request = new Request(requestInfo, requestInit)
+
+        calls.push(request.url)
+
+        return await Promise.resolve(new Response('delegated', { status: 200 }))
+      },
+    })
+
+    const aboutResponse = await app.fetch('about:blank')
+    const blobResponse = await app.fetch('blob:https://example.com/uuid')
+
+    assert.equal(await aboutResponse.text(), 'delegated')
+    assert.equal(await blobResponse.text(), 'delegated')
+    assert.deepEqual(calls, ['about:blank', 'blob:https://example.com/uuid'])
+  })
+
   it('keeps server semantics for manual redirects', async () => {
     const app = fastify()
     await app.register(fastifyFetch)
@@ -355,6 +719,8 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
 
     assert.equal(response.status, 308)
     assert.equal(response.headers.get('location'), '/end')
+    assert.equal(response.url, 'https://example.com/start')
+    assert.notOk(response.redirected)
   })
 
   it('does not follow non-fetch redirect status codes', async () => {
@@ -451,6 +817,74 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
     assert.equal(await response.text(), 'hello world')
     assert.equal(response.headers.get('content-encoding'), 'gzip')
     assert.equal(response.headers.get('content-length'), rawPayload.byteLength.toString())
+  })
+
+  it('decodes x-gzip aliases on internal-buffered transport', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch)
+
+    const rawPayload = zlib.gzipSync('hello x-gzip buffered')
+
+    app.get('/x-gzip-buffered', (_request, reply) => {
+      reply.raw.statusCode = 200
+      reply.raw.setHeader('Content-Encoding', 'x-gzip')
+      reply.raw.setHeader('Content-Type', 'text/plain')
+      reply.raw.end(rawPayload)
+    })
+
+    const response = await app.fetch('https://example.com/x-gzip-buffered')
+
+    assert.equal(await response.text(), 'hello x-gzip buffered')
+  })
+
+  it('decodes x-gzip aliases on internal-stream transport', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch, {
+      policy: {
+        route: ({ currentUrl }) => {
+          if (currentUrl.pathname === '/x-gzip-stream') {
+            return {
+              contract: 'fetch',
+              transport: 'internal-stream',
+            }
+          }
+
+          return 'internal-buffered'
+        },
+      },
+    })
+
+    const rawPayload = zlib.gzipSync('hello x-gzip stream')
+
+    app.get('/x-gzip-stream', (_request, reply) => {
+      reply.raw.statusCode = 200
+      reply.raw.setHeader('Content-Encoding', 'x-gzip')
+      reply.raw.setHeader('Content-Type', 'text/plain')
+      reply.raw.end(rawPayload)
+    })
+
+    const response = await app.fetch('https://example.com/x-gzip-stream')
+
+    assert.equal(await response.text(), 'hello x-gzip stream')
+  })
+
+  it('normalizes case and whitespace when parsing supported content-encoding chains', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch)
+
+    const decodedBody = 'hello mixed token normalization'
+    const rawPayload = zlib.brotliCompressSync(zlib.gzipSync(decodedBody))
+
+    app.get('/mixed-token-normalization', (_request, reply) => {
+      reply.raw.statusCode = 200
+      reply.raw.setHeader('Content-Encoding', ' GZIP , Br ')
+      reply.raw.setHeader('Content-Type', 'text/plain')
+      reply.raw.end(rawPayload)
+    })
+
+    const response = await app.fetch('https://example.com/mixed-token-normalization')
+
+    assert.equal(await response.text(), decodedBody)
   })
 
   it('uses forward-safe contract to normalize decoded headers', async () => {
