@@ -9,7 +9,7 @@ import {
   FETCH_FAILED_CAUSE_MESSAGES,
   FORWARD_SAFE_SANITIZED_HEADERS,
   fastifyFetch,
-} from './index'
+} from '../index'
 
 const expectFetchFailed = async (operation: Promise<unknown>, expectedCause?: string) => {
   try {
@@ -26,7 +26,7 @@ const expectFetchFailed = async (operation: Promise<unknown>, expectedCause?: st
   }
 }
 
-describe('./src/index.spec.ts', () => {
+describe('./src/__tests__/fastify-fetch.spec.ts', () => {
   it('rejects on redirect mode error', async () => {
     const app = fastify()
     await app.register(fastifyFetch)

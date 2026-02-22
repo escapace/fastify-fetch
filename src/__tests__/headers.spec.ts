@@ -1,5 +1,5 @@
 import { Headers } from 'undici'
-import { toNodeHeaders } from './headers'
+import { toNodeHeaders } from '../headers'
 import { assert, describe, it } from 'vitest'
 
 describe('toNodeHeaders', () => {

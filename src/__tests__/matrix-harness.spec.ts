@@ -6,7 +6,7 @@ import {
   type FastifyFetchContract,
   type FastifyFetchTransport,
   fastifyFetch,
-} from './index'
+} from '../index'
 
 type MatrixTransport = Exclude<FastifyFetchTransport, 'reject'>
 
@@ -116,7 +116,7 @@ const runBoundaryScenario = async (dimensions: MatrixDimensions) => {
   }
 }
 
-describe('./src/matrix-harness.spec.ts', () => {
+describe('./src/__tests__/matrix-harness.spec.ts', () => {
   const transports: MatrixTransport[] = ['external', 'internal-buffered', 'internal-stream']
   const contracts: FastifyFetchContract[] = ['fetch', 'forward-safe', 'wire-stream']
   const boundaries: FastifyFetchBoundaryPolicy[] = ['delegate', 'reject']

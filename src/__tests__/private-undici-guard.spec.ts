@@ -1,8 +1,8 @@
 import fastify from 'fastify'
 import { assert, describe, it } from 'vitest'
-import { fastifyFetch } from './index'
+import { fastifyFetch } from '../index'
 
-describe('./src/private-undici-guard.spec.ts', () => {
+describe('./src/__tests__/private-undici-guard.spec.ts', () => {
   it('keeps response.url populated for internal responses', async () => {
     const app = fastify()
     await app.register(fastifyFetch)
