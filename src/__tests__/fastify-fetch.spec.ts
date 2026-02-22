@@ -8,8 +8,8 @@ import {
   DEFAULT_MAX_RESPONSE_BYTES,
   FETCH_FAILED_CAUSE_MESSAGES,
   FORWARD_SAFE_SANITIZED_HEADERS,
-  fastifyFetch,
-} from '../index'
+} from '../constants'
+import { fastifyFetch } from '../index'
 
 const expectFetchFailed = async (operation: Promise<unknown>, expectedCause?: string) => {
   try {

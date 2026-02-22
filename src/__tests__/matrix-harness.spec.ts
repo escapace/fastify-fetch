@@ -1,7 +1,7 @@
 import fastify from 'fastify'
 import { assert, describe, expect, it } from 'vitest'
+import { FETCH_FAILED_CAUSE_MESSAGES } from '../constants'
 import {
-  FETCH_FAILED_CAUSE_MESSAGES,
   type FastifyFetchBoundaryPolicy,
   type FastifyFetchContract,
   type FastifyFetchTransport,

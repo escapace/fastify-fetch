@@ -2,8 +2,9 @@ import fastify from 'fastify'
 import zlib from 'node:zlib'
 import { Headers, Request } from 'undici'
 import { assert, describe, expect, it } from 'vitest'
+import { FETCH_FAILED_CAUSE_MESSAGES } from '../constants'
 import { fromNodeHeaders, sameOrigin, toNodeHeaders } from '../index'
-import { FETCH_FAILED_CAUSE_MESSAGES, fastifyFetch } from '../index'
+import { fastifyFetch } from '../index'
 
 const expectFetchFailed = async (operation: Promise<unknown>, expectedCause?: string | RegExp) => {
   try {
