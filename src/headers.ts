@@ -1,18 +1,28 @@
+/*
+ * Third-party attribution and context (see NOTICE for full details):
+ * - Next.js utility helpers (MIT):
+ *   https://github.com/vercel/next.js/blob/canary/packages/next/src/server/web/utils.ts
+ * - set-cookie-parser splitCookiesString adaptation (MIT):
+ *   https://github.com/nfriedly/set-cookie-parser/blob/master/lib/set-cookie.js
+ * - j2objc CookieSplitter basis (Apache-2.0):
+ *   https://github.com/google/j2objc/commit/16820fdbc8f76ca0c33472810ce0cb03d20efe25
+ *
+ * Individual credit:
+ * - Tom Ball (original CookieSplitter implementation in j2objc)
+ * - Artur Chrusciel (JavaScript implementation in set-cookie-parser)
+ *
+ * Behavior context for splitCookiesString:
+ * - Some platforms expose multiple Set-Cookie values as one comma-joined string.
+ * - Commas inside Expires attributes are data and must not split cookie boundaries.
+ * - Comma-joined Set-Cookie values are uncommon but historically permitted:
+ *   https://tools.ietf.org/html/rfc2616#section-4.2
+ * - Node.js special-cases set-cookie when normalizing incoming headers:
+ *   https://github.com/nodejs/node/blob/d5e363b77ebaf1caf67cd7528224b651c86815c1/lib/_http_incoming.js#L128
+ */
+
 import type { OutgoingHttpHeaders } from 'node:http'
 import { Headers } from 'undici'
 
-// https://github.com/vercel/next.js/blob/canary/packages/next/src/server/web/utils.ts
-
-/*
-  Set-Cookie header field-values are sometimes comma joined in one string. This splits them without choking on commas
-  that are within a single set-cookie field-value, such as in the Expires portion.
-  This is uncommon, but explicitly allowed - see https://tools.ietf.org/html/rfc2616#section-4.2
-  Node.js does this for every header *except* set-cookie - see https://github.com/nodejs/node/blob/d5e363b77ebaf1caf67cd7528224b651c86815c1/lib/_http_incoming.js#L128
-  React Native's fetch does this for *every* header, including set-cookie.
-
-  Based on: https://github.com/google/j2objc/commit/16820fdbc8f76ca0c33472810ce0cb03d20efe25
-  Credits to: https://github.com/tomball for original and https://github.com/chrusart for JavaScript implementation
-*/
 /**
  * Splits a potentially comma-joined `set-cookie` header value into individual cookie values.
  *

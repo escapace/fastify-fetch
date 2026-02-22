@@ -198,7 +198,7 @@ This package targets server-side Fetch compatibility for Fastify HTTP(S) workloa
 
 # API
 
-## function fromNodeHeaders [↗](src/headers.ts#L100-L115 'fromNodeHeaders')
+## function fromNodeHeaders [↗](src/headers.ts#L110-L125 'fromNodeHeaders')
 
 Converts Node.js outgoing headers into a Fetch `Headers` instance.
 
@@ -243,7 +243,7 @@ export declare function sameOrigin(sourceUrl: URL, targetUrl: URL): boolean
 
 The comparison matches scheme, host, and port for tuple origins and treats matching opaque origins (`origin === 'null'`) as same-origin. This helper is commonly used in redirect policy decisions to distinguish same-origin transitions from cross-origin transitions.
 
-## function splitCookiesString [↗](src/headers.ts#L25-L89 'splitCookiesString')
+## function splitCookiesString [↗](src/headers.ts#L35-L99 'splitCookiesString')
 
 Splits a potentially comma-joined `set-cookie` header value into individual cookie values.
 
@@ -265,7 +265,7 @@ Cookie header values in original order.
 
 Commas inside cookie attributes such as `Expires` are preserved, so commas are treated as separators only when they begin a new cookie key-value pair.
 
-## function toNodeHeaders [↗](src/headers.ts#L126-L144 'toNodeHeaders')
+## function toNodeHeaders [↗](src/headers.ts#L136-L154 'toNodeHeaders')
 
 Converts Fetch `Headers` into a Node.js outgoing header object.
 

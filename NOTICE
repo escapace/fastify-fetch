@@ -1,0 +1,24 @@
+NOTICE
+
+This package includes and adapts small portions of code from third-party projects.
+
+1) Vercel Next.js
+   - Source: https://github.com/vercel/next.js/blob/canary/packages/next/src/server/web/utils.ts
+   - Relevant symbols: splitCookiesString, fromNodeOutgoingHttpHeaders, toNodeOutgoingHttpHeaders
+   - License: MIT
+   - License file: https://github.com/vercel/next.js/blob/canary/LICENSE
+
+2) set-cookie-parser
+   - Source: https://github.com/nfriedly/set-cookie-parser/blob/master/lib/set-cookie.js
+   - Relevant symbol: splitCookiesString
+   - License: MIT
+   - License file: https://github.com/nfriedly/set-cookie-parser/blob/master/LICENSE
+   - Additional attribution: Artur Chrusciel (JavaScript implementation introduced in commit def50fe246b1bf98555b9da6c2cf4cd177e8ab64)
+
+3) google/j2objc
+   - Source: https://github.com/google/j2objc/commit/16820fdbc8f76ca0c33472810ce0cb03d20efe25
+   - Relevant algorithm: CookieSplitter basis used by splitCookiesString
+   - License: Apache License 2.0
+   - License file: https://github.com/google/j2objc/blob/master/LICENSE
+
+Modifications in this repository include TypeScript typing, packaging, and integration with fastify-fetch header conversion helpers.
