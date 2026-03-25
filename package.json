@@ -22,7 +22,7 @@
     "eslint": "9.39.3",
     "eslint-config-escapace": "5.14.0",
     "esroll": "1.1.5",
-    "fastify": "5.7.4",
+    "fastify": "5.8.3",
     "fastify-plugin": "5.1.0",
     "knip": "5.85.0",
     "lefthook": "2.1.2",
