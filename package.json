@@ -8,32 +8,32 @@
   },
   "bugs": "https://github.com/escapace/fastify-fetch/issues",
   "dependencies": {
-    "undici": "^7.22.0"
+    "undici": "^7.24.4"
   },
   "devDependencies": {
-    "@ast-grep/napi": "0.41.0",
-    "@commitlint/cli": "20.4.3",
-    "@commitlint/config-conventional": "20.4.3",
+    "@ast-grep/napi": "0.42.0",
+    "@commitlint/cli": "20.5.0",
+    "@commitlint/config-conventional": "20.5.0",
     "@escapace/pnpm-pack": "0.8.0",
     "@escapace/syncpack-configuration": "0.1.0",
     "@ls-lint/ls-lint": "2.3.1",
     "@types/node": "25.2.3",
-    "@vitest/coverage-v8": "4.0.18",
-    "eslint": "9.39.3",
+    "@vitest/coverage-v8": "4.1.0",
+    "eslint": "9.39.4",
     "eslint-config-escapace": "5.14.0",
     "esroll": "1.1.5",
     "fastify": "5.8.3",
     "fastify-plugin": "5.1.0",
-    "knip": "5.85.0",
-    "lefthook": "2.1.2",
+    "knip": "5.88.0",
+    "lefthook": "2.1.4",
     "light-my-request": "6.6.0",
-    "mlly": "1.8.0",
+    "mlly": "1.8.1",
     "prettier": "3.8.1",
     "prettier-config-escapace": "1.2.2",
-    "syncpack": "14.0.0",
+    "syncpack": "14.2.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "vitest": "4.0.18"
+    "vitest": "4.1.0"
   },
   "engines": {
     "node": ">=24.13.0",
