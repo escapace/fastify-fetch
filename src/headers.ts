@@ -21,7 +21,7 @@
  */
 
 import type { OutgoingHttpHeaders } from 'node:http'
-import { Headers } from 'undici'
+import { Headers as UndiciHeaders } from 'undici'
 
 /**
  * Splits a potentially comma-joined `set-cookie` header value into individual cookie values.
@@ -39,7 +39,6 @@ export function splitCookiesString(cookiesString: string) {
   let ch
   let lastComma
   let nextStart
-  let cookiesSeparatorFound
 
   function skipWhitespace() {
     while (pos < cookiesString.length && /\s/.test(cookiesString.charAt(pos))) {
@@ -56,8 +55,6 @@ export function splitCookiesString(cookiesString: string) {
 
   while (pos < cookiesString.length) {
     start = pos
-    cookiesSeparatorFound = false
-
     while (skipWhitespace()) {
       ch = cookiesString.charAt(pos)
       if (ch === ',') {
@@ -75,7 +72,6 @@ export function splitCookiesString(cookiesString: string) {
         // currently special character
         if (pos < cookiesString.length && cookiesString.charAt(pos) === '=') {
           // we found cookies separator
-          cookiesSeparatorFound = true
           // pos is inside the next cookie, so back up and return it.
           pos = nextStart
           cookiesStrings.push(cookiesString.substring(start, lastComma))
@@ -90,9 +86,7 @@ export function splitCookiesString(cookiesString: string) {
       }
     }
 
-    if (!cookiesSeparatorFound || pos >= cookiesString.length) {
-      cookiesStrings.push(cookiesString.substring(start, cookiesString.length))
-    }
+    cookiesStrings.push(cookiesString.substring(start, cookiesString.length))
   }
 
   return cookiesStrings
@@ -108,7 +102,7 @@ export function splitCookiesString(cookiesString: string) {
  * @returns Fetch headers containing all defined entries.
  */
 export function fromNodeHeaders(nodeHeaders: OutgoingHttpHeaders): Headers {
-  const headers = new Headers()
+  const headers = new UndiciHeaders()
   for (const [key, value] of Object.entries(nodeHeaders)) {
     const values = Array.isArray(value) ? value : [value]
     for (let v of values) {
@@ -121,7 +115,7 @@ export function fromNodeHeaders(nodeHeaders: OutgoingHttpHeaders): Headers {
     }
   }
 
-  return headers
+  return headers as unknown as Headers
 }
 
 /**
@@ -136,18 +130,16 @@ export function fromNodeHeaders(nodeHeaders: OutgoingHttpHeaders): Headers {
 export function toNodeHeaders(headers: Headers): OutgoingHttpHeaders {
   const nodeHeaders: OutgoingHttpHeaders = {}
   const cookies: string[] = []
-  // eslint-disable-next-line typescript/strict-boolean-expressions
-  if (headers) {
-    for (const [key, value] of headers.entries()) {
-      if (key.toLowerCase() === 'set-cookie') {
-        // We may have gotten a comma joined string of cookies, or multiple
-        // set-cookie headers. We need to merge them into one header array
-        // to represent all the cookies.
-        cookies.push(...splitCookiesString(value))
-        nodeHeaders[key] = cookies.length === 1 ? cookies[0] : cookies
-      } else {
-        nodeHeaders[key] = value
-      }
+  const source = headers as unknown as UndiciHeaders
+  for (const [key, value] of source.entries()) {
+    if (key.toLowerCase() === 'set-cookie') {
+      // We may have gotten a comma joined string of cookies, or multiple
+      // set-cookie headers. We need to merge them into one header array
+      // to represent all the cookies.
+      cookies.push(...splitCookiesString(value))
+      nodeHeaders[key] = cookies.length === 1 ? cookies[0] : cookies
+    } else {
+      nodeHeaders[key] = value
     }
   }
   return nodeHeaders

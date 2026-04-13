@@ -7,6 +7,7 @@ import {
   type FastifyFetchTransport,
   fastifyFetch,
 } from '../index'
+import { expectFetchFailed } from '../test-support/expect-fetch-failed'
 
 type MatrixTransport = Exclude<FastifyFetchTransport, 'reject'>
 
@@ -20,21 +21,6 @@ interface MatrixScenario {
   readonly id: string
   readonly run: (dimensions: MatrixDimensions) => Promise<void>
   readonly unsupportedReason?: (dimensions: MatrixDimensions) => string | undefined
-}
-
-const expectFetchFailed = async (operation: Promise<unknown>, expectedCause?: string) => {
-  try {
-    await operation
-    assert.fail('expected operation to reject')
-  } catch (error) {
-    assert.instanceOf(error, TypeError)
-    assert.match(error.message, /fetch failed/i)
-
-    if (expectedCause !== undefined) {
-      assert.instanceOf(error.cause, Error)
-      assert.equal(error.cause.message, expectedCause)
-    }
-  }
 }
 
 const runTransportContractScenario = async (dimensions: MatrixDimensions) => {
@@ -174,6 +160,6 @@ describe('./src/__tests__/matrix-harness.spec.ts', () => {
       },
     })
 
-    await expect(app.fetch('https://example.com/value')).rejects.toThrowError(/fetch failed/i)
+    await expect(app.fetch('https://example.com/value')).rejects.toThrow(/fetch failed/i)
   })
 })

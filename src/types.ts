@@ -1,4 +1,17 @@
-import type { Request, RequestInfo, RequestInit, Response, fetch } from 'undici'
+export type FastifyFetchInput = Parameters<typeof globalThis.fetch>[0]
+
+/**
+ * Response type returned by `app.fetch` and accepted from `externalFetch`.
+ */
+export type FastifyFetchResponse = Awaited<ReturnType<typeof globalThis.fetch>>
+
+/**
+ * Fetch-compatible function signature used by {@link FastifyFetchOptions.externalFetch}.
+ */
+export type FastifyFetchExternalFetch = (
+  input: FastifyFetchInput,
+  init?: RequestInit,
+) => Promise<FastifyFetchResponse>
 
 /**
  * Selects where and how a fetch call is executed.
@@ -241,7 +254,7 @@ export interface FastifyFetchOptions {
    *
    * @defaultValue `undici.fetch`
    */
-  readonly externalFetch?: typeof fetch
+  readonly externalFetch?: FastifyFetchExternalFetch
 
   /**
    * Global policy used to resolve routing, redirects, buffering, and contract defaults.
@@ -258,4 +271,7 @@ export interface FastifyFetchOptions {
  * @param init - Optional request initialization including fastify-fetch call overrides.
  * @returns Promise resolving to a Fetch `Response`.
  */
-export type FastifyFetch = (input: RequestInfo | URL, init?: FastifyFetchInit) => Promise<Response>
+export type FastifyFetch = (
+  input: FastifyFetchInput,
+  init?: FastifyFetchInit,
+) => Promise<FastifyFetchResponse>

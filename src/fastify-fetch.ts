@@ -13,13 +13,13 @@ import {
 } from 'node:zlib'
 import { promisify } from 'node:util'
 import {
-  fetch,
-  type BodyInit,
-  type Headers,
-  Request,
-  type RequestInfo,
-  type RequestInit,
-  Response,
+  fetch as undiciFetch,
+  type BodyInit as UndiciBodyInit,
+  type Headers as UndiciHeaders,
+  Request as UndiciRequest,
+  type RequestInfo as UndiciRequestInfo,
+  type RequestInit as UndiciRequestInit,
+  Response as UndiciResponse,
 } from 'undici'
 import { getRequestState } from 'undici/lib/web/fetch/request.js'
 import { getResponseState } from 'undici/lib/web/fetch/response.js'
@@ -34,10 +34,13 @@ import { sameOrigin } from './same-origin'
 import type {
   FastifyFetchCallOverrides,
   FastifyFetchContract,
+  FastifyFetchExternalFetch,
   FastifyFetchInit,
+  FastifyFetchInput,
   FastifyFetchOptions,
   FastifyFetchOverflowPolicy,
   FastifyFetchPolicy,
+  FastifyFetchResponse,
   FastifyFetchRouteDecision,
   FastifyFetchRouteContext,
   FastifyFetchTransport,
@@ -50,7 +53,7 @@ interface CompiledPolicy {
   allowPerCallOverrides: boolean
   defaultContract: FastifyFetchContract
   defaultTransport: 'external' | InternalTransport
-  externalFetch: typeof fetch
+  externalFetch: FastifyFetchExternalFetch
   maxHops: number
   maxRequestBytes: number
   maxResponseBytes: number
@@ -80,7 +83,7 @@ type FollowRedirectResult =
   | ({ kind: 'internal' } & InternalExecutionResult)
   | {
       kind: 'external'
-      response: Response
+      response: FastifyFetchResponse
     }
 
 const gunzip = promisify(_gunzip)
@@ -140,7 +143,7 @@ const applySensitiveRedirectHeaderCleanup = (headers: OutgoingHttpHeaders) => {
   }
 }
 
-const parseContentCodings = (headers: Headers): string[] | undefined => {
+const parseContentCodings = (headers: UndiciHeaders): string[] | undefined => {
   const value = headers.get('content-encoding')
 
   if (value == null) {
@@ -188,12 +191,8 @@ const decodeBufferPayload = async (payload: Buffer, codings: string[]) => {
   )(payload)
 }
 
-const decodeStreamPayload = (payload: Readable, codings: string[]) => {
-  if (codings.length === 0) {
-    return payload
-  }
-
-  return [...codings].reverse().reduce((stream, coding) => {
+const decodeStreamPayload = (payload: Readable, codings: string[]) =>
+  [...codings].reverse().reduce((stream, coding) => {
     if (coding === 'x-gzip' || coding === 'gzip') {
       return stream.pipe(createGunzip())
     }
@@ -204,7 +203,6 @@ const decodeStreamPayload = (payload: Readable, codings: string[]) => {
 
     return stream.pipe(createBrotliDecompress())
   }, payload)
-}
 
 const parseRouteDecision = (value: FastifyFetchRouteDecision | undefined) => {
   if (value == null) {
@@ -225,7 +223,7 @@ const parseRouteDecision = (value: FastifyFetchRouteDecision | undefined) => {
 }
 
 const createRouteContext = (
-  originalRequest: Request,
+  originalRequest: UndiciRequest,
   currentUrl: URL,
   previousUrl: URL | undefined,
   redirectCount: number,
@@ -236,7 +234,7 @@ const createRouteContext = (
   return {
     currentUrl,
     isRedirect: previousUrl !== undefined,
-    originalRequest,
+    originalRequest: originalRequest as unknown as Request,
     previousUrl,
     redirectCount,
     isCrossOriginRedirect() {
@@ -261,7 +259,7 @@ const compilePolicy = (options: FastifyFetchOptions | undefined): CompiledPolicy
     allowPerCallOverrides: options?.allowPerCallOverrides ?? false,
     defaultContract: policy?.defaultContract ?? 'fetch',
     defaultTransport: policy?.defaultTransport ?? 'internal-buffered',
-    externalFetch: options?.externalFetch ?? fetch,
+    externalFetch: options?.externalFetch ?? (undiciFetch as unknown as FastifyFetchExternalFetch),
     maxHops: policy?.redirects?.maxHops ?? 20,
     maxRequestBytes: policy?.buffering?.maxRequestBytes ?? DEFAULT_MAX_REQUEST_BYTES,
     maxResponseBytes: policy?.buffering?.maxResponseBytes ?? DEFAULT_MAX_RESPONSE_BYTES,
@@ -295,7 +293,7 @@ const resolveDecision = (
   }
 }
 
-const getDeclaredContentLength = (headers: Headers) => {
+const getDeclaredContentLength = (headers: UndiciHeaders) => {
   const value = headers.get('content-length')
 
   if (value == null) {
@@ -311,7 +309,10 @@ const getDeclaredContentLength = (headers: Headers) => {
   return number
 }
 
-const createMutableRequestState = async (request: Request, streamNonReplayableBody: boolean) => {
+const createMutableRequestState = async (
+  request: UndiciRequest,
+  streamNonReplayableBody: boolean,
+) => {
   const requestState = getRequestState(request)
   const bodyReplayable = requestState.body == null || requestState.body.source != null
   const headers = toNodeHeaders(request.headers)
@@ -355,32 +356,31 @@ const createMutableRequestState = async (request: Request, streamNonReplayableBo
 
 const delegateExternal = async (
   compiled: CompiledPolicy,
-  request: Request,
+  request: UndiciRequest,
   mutableRequestState: MutableRequestState,
   url: URL,
 ) => {
-  const init: RequestInit = {
-    headers: fromNodeHeaders(mutableRequestState.headers),
+  const init: UndiciRequestInit = {
+    headers: fromNodeHeaders(mutableRequestState.headers) as unknown as UndiciHeaders,
     method: mutableRequestState.method,
     redirect: request.redirect,
     signal: request.signal,
   }
 
-  if (mutableRequestState.hasBody && !safeMethods.has(mutableRequestState.method)) {
-    if (mutableRequestState.bodyBuffer !== undefined) {
-      init.body = mutableRequestState.bodyBuffer
-    } else if (mutableRequestState.bodyStream !== undefined) {
-      init.body = Readable.toWeb(mutableRequestState.bodyStream)
-      mutableRequestState.bodyStream = undefined
-    }
+  if (
+    mutableRequestState.hasBody &&
+    !safeMethods.has(mutableRequestState.method) &&
+    mutableRequestState.bodyBuffer !== undefined
+  ) {
+    init.body = mutableRequestState.bodyBuffer
   }
 
-  const delegatedRequest = new Request(url.toString(), init)
+  const delegatedRequest = new UndiciRequest(url.toString(), init)
 
-  return await compiled.externalFetch(delegatedRequest)
+  return await compiled.externalFetch(delegatedRequest as unknown as FastifyFetchInput)
 }
 
-const applyForwardSafeHeaderSanitization = (headers: Headers, decodedLength?: number) => {
+const applyForwardSafeHeaderSanitization = (headers: UndiciHeaders, decodedLength?: number) => {
   for (const header of FORWARD_SAFE_SANITIZED_HEADERS) {
     headers.delete(header)
   }
@@ -390,17 +390,19 @@ const applyForwardSafeHeaderSanitization = (headers: Headers, decodedLength?: nu
   }
 }
 
-const buildResponseFromInternal = async (result: InternalExecutionResult) => {
-  const headers = fromNodeHeaders(result.response.headers)
+const buildResponseFromInternal = async (
+  result: InternalExecutionResult,
+): Promise<FastifyFetchResponse> => {
+  const headers = fromNodeHeaders(result.response.headers) as unknown as UndiciHeaders
   const status = result.response.statusCode
   const statusText = result.response.statusMessage
   const codings = parseContentCodings(headers)
   const shouldSuppressBody = result.method === 'HEAD' || isNullBodyStatus(status)
 
-  let body: BodyInit | null | undefined
+  let body: UndiciBodyInit | null | undefined
 
   if (result.transport === 'internal-buffered') {
-    const rawPayload = result.response.rawPayload ?? Buffer.alloc(0)
+    const rawPayload = result.response.rawPayload
     let payload = rawPayload
 
     if (
@@ -435,10 +437,10 @@ const buildResponseFromInternal = async (result: InternalExecutionResult) => {
     }
   }
 
-  let response: Response
+  let response: UndiciResponse
 
   try {
-    response = new Response(body, {
+    response = new UndiciResponse(body, {
       headers,
       status,
       statusText,
@@ -450,13 +452,13 @@ const buildResponseFromInternal = async (result: InternalExecutionResult) => {
   const responseState = getResponseState(response)
   responseState.urlList.push(...result.urlList)
 
-  return response
+  return response as unknown as FastifyFetchResponse
 }
 
 const followRedirect = async (
   app: FastifyInstance,
   compiled: CompiledPolicy,
-  request: Request,
+  request: UndiciRequest,
   initialUrl: URL,
   overrides: FastifyFetchCallOverrides | undefined,
 ): Promise<FollowRedirectResult> => {
@@ -464,7 +466,6 @@ const followRedirect = async (
   let currentUrl = initialUrl
   let previousUrl: URL | undefined
   let redirectCount = 0
-  let latestContract = compiled.defaultContract
   let mutableRequestState: MutableRequestState | undefined
 
   const declaredContentLength = getDeclaredContentLength(request.headers)
@@ -532,8 +533,6 @@ const followRedirect = async (
     const context = createRouteContext(request, currentUrl, previousUrl, redirectCount)
     const decision = resolveDecision(compiled, context, overrides)
 
-    latestContract = decision.contract
-
     let transport: FastifyFetchTransport = decision.transport
 
     if (!isHttpScheme(currentUrl) && transport !== 'external' && transport !== 'reject') {
@@ -552,7 +551,7 @@ const followRedirect = async (
       if (previousUrl === undefined && redirectCount === 0) {
         return {
           kind: 'external',
-          response: await compiled.externalFetch(request),
+          response: await compiled.externalFetch(request as unknown as FastifyFetchInput),
         }
       }
 
@@ -616,7 +615,7 @@ const followRedirect = async (
       )
 
       return {
-        contract: latestContract,
+        contract: decision.contract,
         kind: 'internal',
         method: mutableState.method,
         response: withOverflowPolicy.response,
@@ -633,7 +632,7 @@ const followRedirect = async (
       )
 
       return {
-        contract: latestContract,
+        contract: decision.contract,
         kind: 'internal',
         method: mutableState.method,
         response: withOverflowPolicy.response,
@@ -656,7 +655,7 @@ const followRedirect = async (
       )
 
       return {
-        contract: latestContract,
+        contract: decision.contract,
         kind: 'internal',
         method: mutableState.method,
         response: withOverflowPolicy.response,
@@ -719,9 +718,15 @@ export const fastifyFetch = fp<FastifyFetchOptions>((app, options = {}) => {
 
   app.decorate(
     'fetch',
-    async (requestInfo: RequestInfo | URL, requestInit?: FastifyFetchInit): Promise<Response> => {
+    async (
+      requestInfo: FastifyFetchInput,
+      requestInit?: FastifyFetchInit,
+    ): Promise<FastifyFetchResponse> => {
       const { fastifyFetch: callOverrides, ...requestInitWithoutOverrides } = requestInit ?? {}
-      const request = new Request(requestInfo, requestInitWithoutOverrides)
+      const request = new UndiciRequest(
+        requestInfo as unknown as UndiciRequestInfo,
+        requestInitWithoutOverrides as unknown as UndiciRequestInit,
+      )
 
       assertNotAborted(request.signal)
 

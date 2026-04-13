@@ -1,4 +1,3 @@
-import { Headers } from 'undici'
 import { fromNodeHeaders, splitCookiesString, toNodeHeaders } from '../headers'
 import { assert, describe, it } from 'vitest'
 

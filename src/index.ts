@@ -3,8 +3,8 @@
  *
  * @packageDocumentation
  */
-import type { fetch } from 'undici'
 import { fastifyFetch } from './fastify-fetch'
+import type { FastifyFetch, FastifyFetchExternalFetch } from './types'
 
 export { fromNodeHeaders, splitCookiesString, toNodeHeaders } from './headers'
 export { sameOrigin } from './same-origin'
@@ -12,17 +12,20 @@ export { sameOrigin } from './same-origin'
 /**
  * Fetch function type used by {@link FastifyFetchOptions.externalFetch}.
  */
-export type Fetch = typeof fetch
+export type Fetch = FastifyFetchExternalFetch
 
 export type {
   FastifyFetch,
   FastifyFetchBoundaryPolicy,
   FastifyFetchCallOverrides,
   FastifyFetchContract,
+  FastifyFetchExternalFetch,
   FastifyFetchInit,
+  FastifyFetchInput,
   FastifyFetchOptions,
   FastifyFetchOverflowPolicy,
   FastifyFetchPolicy,
+  FastifyFetchResponse,
   FastifyFetchRoute,
   FastifyFetchRouteContext,
   FastifyFetchRouteDecision,
@@ -34,7 +37,7 @@ declare module 'fastify/types/instance' {
     /**
      * Fetch-compatible method decorated by {@link fastifyFetch}.
      */
-    fetch: import('./types').FastifyFetch
+    fetch: FastifyFetch
   }
 }
 

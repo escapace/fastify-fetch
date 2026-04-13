@@ -1,30 +1,10 @@
 import fastify from 'fastify'
 import zlib from 'node:zlib'
-import { Headers, Request } from 'undici'
 import { assert, describe, expect, it } from 'vitest'
 import { FETCH_FAILED_CAUSE_MESSAGES } from '../constants'
-import { fromNodeHeaders, sameOrigin, toNodeHeaders } from '../index'
-import { fastifyFetch } from '../index'
-
-const expectFetchFailed = async (operation: Promise<unknown>, expectedCause?: string | RegExp) => {
-  try {
-    await operation
-    assert.fail('expected operation to reject')
-  } catch (error) {
-    assert.instanceOf(error, TypeError)
-    assert.match(error.message, /fetch failed/i)
-
-    if (expectedCause !== undefined) {
-      assert.instanceOf(error.cause, Error)
-
-      if (typeof expectedCause === 'string') {
-        assert.equal(error.cause.message, expectedCause)
-      } else {
-        assert.match(error.cause.message, expectedCause)
-      }
-    }
-  }
-}
+import { fastifyFetch, fromNodeHeaders, sameOrigin, toNodeHeaders } from '../index'
+import { expectFetchFailed } from '../test-support/expect-fetch-failed'
+import { toObservedFetchRequest } from '../test-support/fetch-observer'
 
 describe('./src/__tests__/testing-gaps.spec.ts', () => {
   it('[FF-001] normalizes custom abort reasons to AbortError', async () => {
@@ -294,7 +274,7 @@ describe('./src/__tests__/testing-gaps.spec.ts', () => {
         },
       },
       externalFetch: async (requestInfo, requestInit) => {
-        const request = new Request(requestInfo, requestInit)
+        const request = toObservedFetchRequest(requestInfo, requestInit)
 
         delegatedBodies.push(await request.text())
 
@@ -319,10 +299,6 @@ describe('./src/__tests__/testing-gaps.spec.ts', () => {
     assert.equal(await response.text(), 'external')
     assert.deepEqual(delegatedBodies, ['delegated-body'])
   })
-
-  it.todo(
-    '[FF-010-stream] delegateExternal stream-body branch is blocked by redirect replay safety invariant and needs a direct seam',
-  )
 
   it('[FF-011] decodes internal-stream response before Response creation in fetch contract', async () => {
     const app = fastify()

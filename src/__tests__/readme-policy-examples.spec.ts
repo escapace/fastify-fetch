@@ -1,25 +1,11 @@
 import fastify, { type LightMyRequestResponse } from 'fastify'
 import type { InjectOptions } from 'light-my-request'
 import zlib from 'node:zlib'
-import { Request } from 'undici'
 import { assert, describe, it } from 'vitest'
 import { FETCH_FAILED_CAUSE_MESSAGES } from '../constants'
 import { fastifyFetch, sameOrigin } from '../index'
-
-const expectFetchFailed = async (operation: Promise<unknown>, expectedCause?: string) => {
-  try {
-    await operation
-    assert.fail('expected operation to reject')
-  } catch (error) {
-    assert.instanceOf(error, TypeError)
-    assert.match(error.message, /fetch failed/i)
-
-    if (expectedCause !== undefined) {
-      assert.instanceOf(error.cause, Error)
-      assert.equal(error.cause.message, expectedCause)
-    }
-  }
-}
+import { expectFetchFailed } from '../test-support/expect-fetch-failed'
+import { toObservedFetchRequest } from '../test-support/fetch-observer'
 
 describe('./src/__tests__/readme-policy-examples.spec.ts', () => {
   it('[README-001] local orchestration with selective external calls', async () => {
@@ -33,7 +19,7 @@ describe('./src/__tests__/readme-policy-examples.spec.ts', () => {
           currentUrl.hostname === 'api.internal.local' ? 'internal-buffered' : 'external',
       },
       externalFetch: async (requestInfo, requestInit) => {
-        const request = new Request(requestInfo, requestInit)
+        const request = toObservedFetchRequest(requestInfo, requestInit)
 
         externalCalls.push(request.url)
 
@@ -104,7 +90,7 @@ describe('./src/__tests__/readme-policy-examples.spec.ts', () => {
         },
       },
       externalFetch: async (requestInfo, requestInit) => {
-        const request = new Request(requestInfo, requestInit)
+        const request = toObservedFetchRequest(requestInfo, requestInit)
 
         externalCalls.push(request.url)
 

@@ -1,7 +1,6 @@
 import fastify, { type LightMyRequestResponse } from 'fastify'
 import type { InjectOptions } from 'light-my-request'
 import zlib from 'node:zlib'
-import { Request } from 'undici'
 import { assert, describe, expect, it } from 'vitest'
 import {
   DEFAULT_MAX_REQUEST_BYTES,
@@ -10,21 +9,8 @@ import {
   FORWARD_SAFE_SANITIZED_HEADERS,
 } from '../constants'
 import { fastifyFetch } from '../index'
-
-const expectFetchFailed = async (operation: Promise<unknown>, expectedCause?: string) => {
-  try {
-    await operation
-    assert.fail('expected operation to reject')
-  } catch (error) {
-    assert.instanceOf(error, TypeError)
-    assert.match(error.message, /fetch failed/i)
-
-    if (expectedCause !== undefined) {
-      assert.instanceOf(error.cause, Error)
-      assert.equal(error.cause.message, expectedCause)
-    }
-  }
-}
+import { expectFetchFailed } from '../test-support/expect-fetch-failed'
+import { toObservedFetchRequest } from '../test-support/fetch-observer'
 
 describe('./src/__tests__/fastify-fetch.spec.ts', () => {
   it('rejects on redirect mode error', async () => {
@@ -56,7 +42,7 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
       app.fetch('https://example.com/', {
         signal: controller.signal,
       }),
-    ).rejects.toThrowError(/aborted/i)
+    ).rejects.toThrow(/aborted/i)
   })
 
   it('rejects when aborted during redirect processing', async () => {
@@ -86,7 +72,7 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
       controller.abort()
     }, 10)
 
-    await expect(operation).rejects.toThrowError(/aborted/i)
+    await expect(operation).rejects.toThrow(/aborted/i)
   })
 
   it('rejects with AbortError when aborted during delegated external fetch after redirect', async () => {
@@ -103,7 +89,7 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
         },
       },
       externalFetch: async (requestInfo, requestInit) => {
-        const request = new Request(requestInfo, requestInit)
+        const request = toObservedFetchRequest(requestInfo, requestInit)
 
         await new Promise<void>((resolve, reject) => {
           const timer = setTimeout(() => {
@@ -337,7 +323,7 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
         },
       },
       externalFetch: async (requestInfo, requestInit) => {
-        const request = new Request(requestInfo, requestInit)
+        const request = toObservedFetchRequest(requestInfo, requestInit)
 
         calls.push(request.headers.get('authorization') ?? 'none')
 
@@ -381,7 +367,7 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
         },
       },
       externalFetch: async (requestInfo, requestInit) => {
-        const request = new Request(requestInfo, requestInit)
+        const request = toObservedFetchRequest(requestInfo, requestInit)
 
         calls.push({
           authorization: request.headers.get('authorization'),
@@ -440,7 +426,7 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
         },
       },
       externalFetch: async (requestInfo, requestInit) => {
-        const request = new Request(requestInfo, requestInit)
+        const request = toObservedFetchRequest(requestInfo, requestInit)
 
         calls.push({
           authorization: request.headers.get('authorization'),
@@ -595,7 +581,7 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
       app.fetch('https://example.com/custom', {
         method: 'CONNECT',
       }),
-    ).rejects.toThrowError(/unsupported/i)
+    ).rejects.toThrow(/unsupported/i)
   })
 
   it('rejects redirects to non-http schemes', async () => {
@@ -647,7 +633,7 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
 
     await app.register(fastifyFetch, {
       externalFetch: async (requestInfo, requestInit) => {
-        const request = new Request(requestInfo, requestInit)
+        const request = toObservedFetchRequest(requestInfo, requestInit)
 
         calls.push(request.url)
 
@@ -667,7 +653,7 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
 
     await app.register(fastifyFetch, {
       externalFetch: async (requestInfo, requestInit) => {
-        const request = new Request(requestInfo, requestInit)
+        const request = toObservedFetchRequest(requestInfo, requestInit)
 
         calls.push(request.url)
 
@@ -687,7 +673,7 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
 
     await app.register(fastifyFetch, {
       externalFetch: async (requestInfo, requestInit) => {
-        const request = new Request(requestInfo, requestInit)
+        const request = toObservedFetchRequest(requestInfo, requestInit)
 
         calls.push(request.url)
 
@@ -1214,7 +1200,7 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
         },
       },
       externalFetch: async (requestInfo, requestInit) => {
-        const request = new Request(requestInfo, requestInit)
+        const request = toObservedFetchRequest(requestInfo, requestInit)
 
         delegatedCalls.push(request.url)
 
@@ -1300,7 +1286,7 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
         route: () => 'external',
       },
       externalFetch: async (requestInfo, requestInit) => {
-        const request = new Request(requestInfo, requestInit)
+        const request = toObservedFetchRequest(requestInfo, requestInit)
 
         enabledExternalCalls.push(request.url)
 
@@ -1610,6 +1596,106 @@ describe('./src/__tests__/fastify-fetch.spec.ts', () => {
 
     assert.equal(response.headers.get('content-encoding'), 'gzip, asd, br')
     assert.notEqual(value.toString(), 'hello world')
+  })
+
+  it('memoizes cross-origin redirect checks within one route evaluation', async () => {
+    const app = fastify()
+    const evaluations: Array<{ first: boolean; second: boolean }> = []
+
+    await app.register(fastifyFetch, {
+      policy: {
+        route: (context) => {
+          if (!context.isRedirect) {
+            return 'internal-buffered'
+          }
+
+          const first = context.isCrossOriginRedirect()
+          const second = context.isCrossOriginRedirect()
+
+          evaluations.push({ first, second })
+
+          return 'external'
+        },
+      },
+      externalFetch: async () => await Promise.resolve(new Response('external', { status: 200 })),
+    })
+
+    app.get('/start', (_request, reply) => {
+      reply.raw.statusCode = 308
+      reply.raw.setHeader('Location', 'https://other.example/final')
+      reply.raw.end()
+    })
+
+    const response = await app.fetch('https://example.com/start')
+
+    assert.equal(await response.text(), 'external')
+    assert.deepEqual(evaluations, [{ first: true, second: true }])
+  })
+
+  it('treats explicit empty request bodies as empty payloads', async () => {
+    const app = fastify()
+
+    app.addContentTypeParser('*', { parseAs: 'string' }, (_request, body, done) => {
+      done(null, body)
+    })
+
+    await app.register(fastifyFetch)
+
+    app.post('/empty', (request, reply) => {
+      void reply.send(request.body)
+    })
+
+    const response = await app.fetch('https://example.com/empty', {
+      body: '',
+      headers: {
+        'content-type': 'text/plain',
+      },
+      method: 'POST',
+    })
+
+    assert.equal(await response.text(), '')
+  })
+
+  it('suppresses bodies for internal-stream HEAD responses', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch, {
+      policy: {
+        route: () => 'internal-stream',
+      },
+    })
+
+    app.head('/head-stream', (_request, reply) => {
+      reply.raw.statusCode = 200
+      reply.raw.setHeader('content-encoding', 'gzip')
+      reply.raw.end(zlib.gzipSync('hello'))
+    })
+
+    const response = await app.fetch('https://example.com/head-stream', {
+      method: 'HEAD',
+    })
+
+    assert.equal(await response.text(), '')
+  })
+
+  it('normalizes undefined internal transport errors to fetch-style TypeError', async () => {
+    const app = fastify()
+    await app.register(fastifyFetch)
+    ;(app as unknown as { inject: () => Promise<never> }).inject = async () => {
+      await Promise.resolve()
+
+      const error: unknown = undefined
+
+      throw error
+    }
+
+    try {
+      await app.fetch('https://example.com/boom')
+      assert.fail('expected operation to reject')
+    } catch (error) {
+      assert.instanceOf(error, TypeError)
+      assert.equal(error.message, 'fetch failed')
+      assert.equal(error.cause, undefined)
+    }
   })
 
   it('normalizes internal transport errors to fetch-style TypeError', async () => {
