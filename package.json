@@ -8,7 +8,7 @@
   },
   "bugs": "https://github.com/escapace/fastify-fetch/issues",
   "dependencies": {
-    "undici": "^7.24.6"
+    "undici": "^8.0.2"
   },
   "devDependencies": {
     "@ast-grep/napi": "0.42.0",
