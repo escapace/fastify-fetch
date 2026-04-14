@@ -18,7 +18,7 @@
     "@escapace/syncpack-configuration": "0.1.0",
     "@ls-lint/ls-lint": "2.3.1",
     "@types/node": "25.5.2",
-    "@vitest/coverage-v8": "4.1.2",
+    "@vitest/coverage-v8": "4.1.3",
     "eslint": "10.2.0",
     "eslint-config-escapace": "5.16.1",
     "esroll": "1.2.0",
@@ -33,7 +33,7 @@
     "syncpack": "14.3.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "vitest": "4.1.2"
+    "vitest": "4.1.3"
   },
   "engines": {
     "node": ">=24.13.0",
