@@ -10,7 +10,7 @@ importers:
     dependencies:
       undici:
         specifier: ^8.0.2
-        version: 8.0.2
+        version: 8.0.3
     devDependencies:
       '@ast-grep/napi':
         specifier: 0.42.1
@@ -3374,8 +3374,8 @@ packages:
   undici-types@7.18.2:
     resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
 
-  undici@8.0.2:
-    resolution: {integrity: sha512-B9MeU5wuFhkFAuNeA19K2GDFcQXZxq33fL0nRy2Aq30wdufZbyyvxW3/ChaeipXVfy/wUweZyzovQGk39+9k2w==}
+  undici@8.0.3:
+    resolution: {integrity: sha512-vTLEG/ceXgu/dMTQ8uNE2zgl7I7qEkx9l9tkz2H802AkgbBMvbmHMu4YqsrpGbUAMYKSQhCbmjsWMAeGu1dYXg==}
     engines: {node: '>=22.19.0'}
 
   unicorn-magic@0.3.0:
@@ -6949,7 +6949,7 @@ snapshots:
 
   undici-types@7.18.2: {}
 
-  undici@8.0.2: {}
+  undici@8.0.3: {}
 
   unicorn-magic@0.3.0: {}
 
