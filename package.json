@@ -32,7 +32,7 @@
     "prettier-config-escapace": "1.2.2",
     "syncpack": "14.3.0",
     "tsx": "4.21.0",
-    "typescript": "6.0.2",
+    "typescript": "6.0.3",
     "vitest": "4.1.4"
   },
   "engines": {
