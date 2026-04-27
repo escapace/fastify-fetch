@@ -7,13 +7,16 @@ export default mergeConfig(
   configShared,
   defineConfig({
     define: {
-      ...builds.node.define,
+      ...['node', 'neutral', 'browser']
+        .map(
+          (target) =>
+            (Reflect.get(builds, target) as { define?: Record<string, string> } | undefined)
+              ?.define,
+        )
+        .find((value) => value !== undefined),
       __ENVIRONMENT__: JSON.stringify('development'),
       __VERSION__: JSON.stringify(version),
-    },
-    esbuild: {
-      platform: 'node',
-      target: builds.node.target,
+      __VITEST_PROJECT__: JSON.stringify('node'),
     },
     test: {
       environment: 'node',

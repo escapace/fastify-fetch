@@ -26,13 +26,8 @@ jobs:
     permissions:
       actions: read
       contents: read
-      packages: read
       security-events: write
-    uses: escapace/workflows/.github/workflows/ci-typescript.yaml@trunk
+    uses: escapace/workflows/.github/workflows/codeql.yaml@trunk
     with:
-      enable-codeql: true
-      enable-test: false
-      node-version: ${{ needs.context.outputs.node-version }}
-      pnpm-version: ${{ needs.context.outputs.pnpm-version }}
+      languages: javascript-typescript
       ref: ${{ needs.context.outputs.ref }}
-      version: ${{ needs.context.outputs.version }}
