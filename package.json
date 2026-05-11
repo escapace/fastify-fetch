@@ -8,23 +8,23 @@
   },
   "bugs": "https://github.com/escapace/fastify-fetch/issues",
   "dependencies": {
-    "undici": "^8.1.0"
+    "undici": "^8.2.0"
   },
   "devDependencies": {
     "@ast-grep/napi": "0.42.1",
-    "@commitlint/cli": "20.5.2",
-    "@commitlint/config-conventional": "20.5.0",
+    "@commitlint/cli": "20.5.3",
+    "@commitlint/config-conventional": "20.5.3",
     "@escapace/pnpm-pack": "0.9.0",
     "@escapace/syncpack-configuration": "0.2.0",
     "@ls-lint/ls-lint": "2.3.1",
     "@types/node": "24.12.2",
     "@vitest/coverage-v8": "4.1.5",
-    "eslint": "10.2.1",
+    "eslint": "10.3.0",
     "eslint-config-escapace": "5.18.0",
     "esroll": "1.2.3",
     "fastify": "5.8.5",
     "fastify-plugin": "5.1.0",
-    "knip": "6.8.0",
+    "knip": "6.11.0",
     "lefthook": "2.1.6",
     "light-my-request": "6.6.0",
     "mlly": "1.8.2",
