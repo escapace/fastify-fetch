@@ -12,8 +12,8 @@
   },
   "devDependencies": {
     "@ast-grep/napi": "0.42.1",
-    "@commitlint/cli": "20.5.3",
-    "@commitlint/config-conventional": "20.5.3",
+    "@commitlint/cli": "21.0.1",
+    "@commitlint/config-conventional": "21.0.1",
     "@escapace/pnpm-pack": "0.9.0",
     "@escapace/syncpack-configuration": "0.2.0",
     "@ls-lint/ls-lint": "2.3.1",
