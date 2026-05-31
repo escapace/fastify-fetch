@@ -25,8 +25,8 @@ importers:
         specifier: 0.9.0
         version: 0.9.0(@pnpm/logger@5.2.0)
       '@escapace/syncpack-configuration':
-        specifier: 0.2.0
-        version: 0.2.0(syncpack@14.3.1)
+        specifier: 0.3.0
+        version: 0.3.0(syncpack@14.3.1)
       '@ls-lint/ls-lint':
         specifier: 2.3.1
         version: 2.3.1
@@ -422,10 +422,10 @@ packages:
     engines: {node: '>=24'}
     hasBin: true
 
-  '@escapace/syncpack-configuration@0.2.0':
-    resolution: {integrity: sha512-z043blYUdIDlTpYc6nhOLhUuETgbRD3ML/FpTp+mlleGO9+b/B5re2z69CL6ER6rrvqUbsUo0j/fx/Ku1VFF+w==}
+  '@escapace/syncpack-configuration@0.3.0':
+    resolution: {integrity: sha512-wqnoFkEAEHVOeP9cwst8mLLwS7rMruZqT8jiOF4v1dbnRc6gV482M5HFHpqc/sIK9sNoYLvyGxlgw+POQltBKQ==}
     peerDependencies:
-      syncpack: ^14.3.0
+      syncpack: ^15 || ^16
 
   '@eslint-community/eslint-utils@4.9.1':
     resolution: {integrity: sha512-phrYmNiYppR7znFEdqgfWHXR6NCkZEK7hwWDHZUjit/2/U0r6XvkDl0SYnoM51Hq7FhCGdLDT6zxCCOY1hexsQ==}
@@ -3807,7 +3807,7 @@ snapshots:
       - react-native-b4a
       - supports-color
 
-  '@escapace/syncpack-configuration@0.2.0(syncpack@14.3.1)':
+  '@escapace/syncpack-configuration@0.3.0(syncpack@14.3.1)':
     dependencies:
       syncpack: 14.3.1
 
