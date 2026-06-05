@@ -20,7 +20,7 @@
     "@types/node": "24.12.4",
     "@vitest/coverage-v8": "4.1.7",
     "eslint": "10.4.0",
-    "eslint-config-escapace": "5.19.0",
+    "eslint-config-escapace": "5.19.1",
     "esroll": "1.2.3",
     "fastify": "5.8.5",
     "fastify-plugin": "5.1.0",
