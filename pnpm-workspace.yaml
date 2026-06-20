@@ -29,7 +29,8 @@ minimumReleaseAgeExclude:
   - syncpack-linux-x64-musl
   - syncpack-windows-arm64
   - syncpack-windows-x64
-  - undici@7.24.0
+  # Renovate security update: undici@8.5.0
+  - undici@7.24.0 || 8.5.0
 onlyBuiltDependencies:
   - '@ast-grep/cli'
   - esbuild
